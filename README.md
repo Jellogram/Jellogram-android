@@ -22,7 +22,7 @@ You will need Android Studio, Android NDK, and Android SDK.
 
 4. Build release APK:
    ```bash
-   ./gradlew assembleRelease
+   ./gradlew :TMessagesProj_App:assembleRelease
    ```
 
 ## Passkey (WebAuthn) Support
