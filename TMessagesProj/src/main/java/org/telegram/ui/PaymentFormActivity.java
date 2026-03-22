@@ -3903,34 +3903,70 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
         showEditDoneProgress(true, true);
         try {
             if ("stripe".equals(paymentForm.native_provider)) {
-                Stripe stripe = new Stripe(providerApiKey);
-                stripe.createToken(card, new TokenCallback() {
-                            public void onSuccess(Token token) {
-                                if (canceled) {
+                final String publishableKey = providerApiKey;
+                final String cardNumber = inputFields[FIELD_CARD].getText().toString().replaceAll("\\s", "");
+                final String[] expParts = inputFields[FIELD_EXPIRE_DATE].getText().toString().split("/");
+                final String expMonth = expParts.length > 0 ? expParts[0].trim() : "";
+                final String expYear = expParts.length > 1 ? expParts[1].trim() : "";
+                final String cvc = inputFields[FIELD_CVV].getText().toString();
+                new AsyncTask<Void, Void, String>() {
+                    Exception error;
+                    @Override
+                    protected String doInBackground(Void... v) {
+                        try {
+                            java.net.URL url = new java.net.URL("https://api.stripe.com/v1/tokens");
+                            java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+                            conn.setRequestMethod("POST");
+                            conn.setDoOutput(true);
+                            String auth = android.util.Base64.encodeToString((publishableKey + ":").getBytes("UTF-8"), android.util.Base64.NO_WRAP);
+                            conn.setRequestProperty("Authorization", "Basic " + auth);
+                            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                            conn.setRequestProperty("Stripe-Version", "2020-08-27");
+                            String body = "card[number]=" + java.net.URLEncoder.encode(cardNumber, "UTF-8")
+                                    + "&card[exp_month]=" + java.net.URLEncoder.encode(expMonth, "UTF-8")
+                                    + "&card[exp_year]=" + java.net.URLEncoder.encode(expYear, "UTF-8")
+                                    + "&card[cvc]=" + java.net.URLEncoder.encode(cvc, "UTF-8");
+                            conn.getOutputStream().write(body.getBytes("UTF-8"));
+                            java.io.InputStream is = conn.getResponseCode() == 200 ? conn.getInputStream() : conn.getErrorStream();
+                            java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+                            return s.hasNext() ? s.next() : "";
+                        } catch (Exception e) {
+                            error = e;
+                            return null;
+                        }
+                    }
+                    @Override
+                    protected void onPostExecute(String result) {
+                        if (canceled) return;
+                        if (result != null) {
+                            try {
+                                org.json.JSONObject json = new org.json.JSONObject(result);
+                                if (json.has("error")) {
+                                    showEditDoneProgress(true, false);
+                                    setDonePressed(false);
+                                    AlertsCreator.showSimpleToast(PaymentFormActivity.this, json.getJSONObject("error").optString("message", "Payment error"));
                                     return;
                                 }
-                                paymentJson = String.format(Locale.US, "{\"type\":\"%1$s\", \"id\":\"%2$s\"}", token.getType(), token.getId());
+                                String tokenId = json.getString("id");
+                                String tokenType = json.optString("type", "card");
+                                paymentJson = String.format(java.util.Locale.US, "{\"type\":\"%1$s\", \"id\":\"%2$s\"}", tokenType, tokenId);
                                 AndroidUtilities.runOnUIThread(() -> {
                                     goToNextStep();
                                     showEditDoneProgress(true, false);
                                     setDonePressed(false);
                                 });
-                            }
-
-                            public void onError(Exception error) {
-                                if (canceled) {
-                                    return;
-                                }
+                            } catch (Exception e) {
                                 showEditDoneProgress(true, false);
                                 setDonePressed(false);
-                                if (error instanceof APIConnectionException || error instanceof APIException) {
-                                    AlertsCreator.showSimpleToast(PaymentFormActivity.this, LocaleController.getString(R.string.PaymentConnectionFailed));
-                                } else {
-                                    AlertsCreator.showSimpleToast(PaymentFormActivity.this, error.getMessage());
-                                }
+                                AlertsCreator.showSimpleToast(PaymentFormActivity.this, e.getMessage());
                             }
+                        } else {
+                            showEditDoneProgress(true, false);
+                            setDonePressed(false);
+                            AlertsCreator.showSimpleToast(PaymentFormActivity.this, LocaleController.getString(R.string.PaymentConnectionFailed));
                         }
-                );
+                    }
+                }.execute();
             } else if ("smartglocal".equals(paymentForm.native_provider)) {
                 AsyncTask<Object, Object, String> task = new AsyncTask<Object, Object, String>() {
                     @Override
