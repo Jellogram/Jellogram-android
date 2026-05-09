@@ -423,7 +423,7 @@ public class MediaDataController extends BaseController {
     }
 
     public void checkReactions() {
-        if (!isLoadingReactions) {
+        if (!isLoadingReactions && Math.abs(System.currentTimeMillis() / 1000 - reactionsUpdateDate) >= 60 * 60) {
             loadReactions(true, null);
         }
     }
