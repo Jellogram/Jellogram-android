@@ -97,7 +97,7 @@ public class BetaUpdaterController {
     public void checkForUpdate(boolean force, Runnable whenDone) {
         if (checkingForUpdate) return;
 
-        final boolean isManualCheck = force && !firstCheck; // Manual check only if force=true and not first check
+        final boolean isManualCheck = force;
 
         if (firstCheck) {
             force = true;
