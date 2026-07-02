@@ -11,6 +11,7 @@ import org.telegram.ui.web.HttpGetFileTask;
 import org.telegram.ui.web.HttpGetTask;
 
 import java.io.File;
+import java.io.InputStream;
 
 public class BetaUpdaterController {
 
@@ -91,10 +92,33 @@ public class BetaUpdaterController {
     private final static long CHECK_INTERVAL = 1000 * 60 * 20; // 20 minutes
     private final static long CHECK_INTERVAL_PRIVATE = 1000 * 60 * 4; // 5 minutes
 
+    private boolean isUpdatesEnabled() {
+        try {
+            InputStream is = ApplicationLoader.applicationContext.getAssets().open("config.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            String jsonStr = new String(buffer, "UTF-8");
+            JSONObject json = new JSONObject(jsonStr);
+            return json.optBoolean("updates", true);
+        } catch (Exception e) {
+            FileLog.e("Failed to read config.json", e);
+            return true;
+        }
+    }
+
     private boolean firstCheck = true;
     private boolean checkingForUpdate;
     private final Runnable scheduledUpdateCheck = () -> checkForUpdate(false, null);
     public void checkForUpdate(boolean force, Runnable whenDone) {
+        if (!isUpdatesEnabled()) {
+            if (whenDone != null) {
+                whenDone.run();
+            }
+            return;
+        }
+        
         if (checkingForUpdate) return;
 
         if (firstCheck) {

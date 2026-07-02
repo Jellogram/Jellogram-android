@@ -339,6 +339,9 @@ public class ApplicationLoader extends Application {
         }
 
         applicationHandler = new Handler(applicationContext.getMainLooper());
+        
+        // Установка обработчика крашей для Jellogram
+        Thread.setDefaultUncaughtExceptionHandler(new JellogramCrashHandler(applicationContext));
 
         AndroidUtilities.runOnUIThread(ApplicationLoader::startPushService);
 

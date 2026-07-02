@@ -4923,6 +4923,17 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         participant = visibleChatParticipants.get(position - membersStartRow);
                     }
                     return onMemberClick(participant, true, view);
+                } else if (position == userIdRow) {
+                    TLRPC.User user = getMessagesController().getUser(userId);
+                    if (user != null) {
+                        try {
+                            AndroidUtilities.addToClipboard(String.valueOf(user.id));
+                            BulletinFactory.of(ProfileActivity.this).createCopyBulletin("ID скопирован").show();
+                        } catch (Exception e) {
+                            FileLog.e(e);
+                        }
+                    }
+                    return true;
                 } else if (position == birthdayRow) {
                     if (editRow(view, position)) return true;
                     if (userInfo == null) return false;
@@ -10322,6 +10333,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         phoneRow = -1;
         noteRow = -1;
         userInfoRow = -1;
+        userIdRow = -1;
         locationRow = -1;
         channelInfoRow = -1;
         usernameRow = -1;
@@ -10510,6 +10522,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 infoStartRow = rowCount;
                 if (!isBot && (hasPhone || !hasInfo)) {
                     phoneRow = rowCount++;
+                }
+                if (user != null && JellogramSettings.getInstance().isShowUserId()) {
+                    userIdRow = rowCount++;
                 }
                 if (userInfo != null && !TextUtils.isEmpty(userInfo.about)) {
                     userInfoRow = rowCount++;
@@ -13252,6 +13267,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         }
                         isFragmentPhoneNumber = phoneNumber != null && phoneNumber.matches("888\\d{8}");
                         detailCell.setTextAndValue(text, LocaleController.getString(isFragmentPhoneNumber ? R.string.AnonymousNumber : R.string.PhoneMobile), false);
+                    } else if (position == userIdRow) {
+                        TLRPC.User user = getMessagesController().getUser(userId);
+                        if (user != null) {
+                            detailCell.setTextAndValue(String.valueOf(user.id), "ID", false);
+                        }
                     } else if (position == noteRow) {
                         final TLRPC.UserFull userInfo = getMessagesController().getUserFull(userId);
                         if (userInfo == null) return;
@@ -14054,7 +14074,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (position == infoHeaderRow || position == membersHeaderRow || position == settingsSectionRow2 ||
                     position == numberSectionRow || position == helpHeaderRow || position == debugHeaderRow || position == botPermissionsHeader) {
                 return VIEW_TYPE_HEADER;
-            } else if (position == phoneRow || position == locationRow || position == numberRow || position == birthdayRow) {
+            } else if (position == phoneRow || position == locationRow || position == numberRow || position == birthdayRow || position == userIdRow) {
                 return VIEW_TYPE_TEXT_DETAIL;
             } else if (position == usernameRow || position == setUsernameRow) {
                 return VIEW_TYPE_TEXT_DETAIL_MULTILINE;

@@ -263,4 +263,8 @@
     <string name="RemindTodayAt">\'Отправить сегодня в\' HH:mm</string>
     <string name="RemindDayAt">\'Отправить\' d MMM \'в\' HH:mm</string>
     <string name="RemindDayYearAt">\'Напомнить\' d MMM yyyy \'в\' HH:mm</string>
+    <string name="JellogramSettings">Настройки JelloGram</string>
+    <string name="JellogramSettingsGeneral">Общие</string>
+    <string name="JellogramSettingsSlider">Слайдер (placeholder)</string>
+    <string name="JellogramSettingsToggle">Переключатель (placeholder)</string>
 </resources>
