@@ -646,6 +646,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private int infoEndRowEmpty;
     private int phoneRow;
     private int noteRow;
+    private int userIdRow = -1;
     private int locationRow;
     private int userInfoRow;
     private int channelInfoRow;
