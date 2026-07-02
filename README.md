@@ -1,6 +1,8 @@
-# Testgram for Android
+# JelloGram for Android
 
-Android client for [Testgram](https://github.com/glebxdlolreal/testgram) — a self-hosted Telegram-compatible server.
+Android client for Jellogram — a self-hosted Telegram-compatible server.
+
+[![Build Status Android](https://github.com/Jellogram/Jellogram-android/actions/workflows/build.yml/badge.svg)](https://github.com/Jellogram/Jellogram-android/actions/workflows/build.yml)
 
 ## What must be configured
 
