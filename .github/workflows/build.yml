@@ -48,6 +48,7 @@ jobs:
           cp $ANDROID_HOME/build-tools/30.0.3/dx $ANDROID_HOME/build-tools/35.0.0/dx
           cp $ANDROID_HOME/build-tools/30.0.3/lib/dx.jar $ANDROID_HOME/build-tools/35.0.0/lib/dx.jar
 
+      # Кеширование Gradle
       - name: Cache Gradle dependencies
         uses: actions/cache@v4
         with:
@@ -61,20 +62,17 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # 🔥 Глобально включаем buildConfig для всех модулей (надёжнее, чем sed)
-      - name: Enable buildConfig globally
+      # Включаем AndroidX и Jetifier (если ещё не включены)
+      - name: Enable AndroidX and Jetifier
         run: |
-          echo "android.defaults.buildfeatures.buildconfig=true" >> gradle.properties
-          # Также включаем AndroidX и Jetifier, если ещё нет
-          grep -qxF "android.useAndroidX=true" gradle.properties || echo "android.useAndroidX=true" >> gradle.properties
-          grep -qxF "android.enableJetifier=true" gradle.properties || echo "android.enableJetifier=true" >> gradle.properties
+          echo "android.useAndroidX=true" >> gradle.properties
+          echo "android.enableJetifier=true" >> gradle.properties
 
-      # 🧹 Очистка, чтобы перегенерировать R-классы
+      # Очистка перед сборкой (чтобы перегенерировать R-классы)
       - name: Clean project
         run: ./gradlew clean
 
-      # 📝 Сохраняем полный лог для диагностики
-      - name: Build with full logging
+      - name: Build APK
         env:
           ANDROID_HOME: ${{ env.ANDROID_HOME }}
           ANDROID_SDK_ROOT: ${{ env.ANDROID_HOME }}
@@ -82,26 +80,14 @@ jobs:
           JAVA_HOME: ${{ env.JAVA_HOME }}
           GRADLE_OPTS: -Xmx4096m -Dorg.gradle.jvmargs=-Xmx4096m
         run: |
-          # Собираем release с подробным выводом и сохраняем лог
-          ./gradlew --no-daemon --stacktrace --info :TMessagesProj_App:assembleRelease 2>&1 | tee build.log
-          # Если сборка провалилась, выведем первые 100 строк ошибок и завершим с ошибкой
-          if [ $? -ne 0 ]; then
-            echo "========== СБОРКА ПРОВАЛИЛАСЬ =========="
-            echo "Первые 100 строк лога ошибок:"
-            grep -i "error" build.log | head -100
-            exit 1
+          if [ "${{ github.event.inputs.build_type }}" == "debug" ]; then
+            ./gradlew --stacktrace --info :TMessagesProj_App:assembleDebug
+          else
+            ./gradlew --stacktrace --info :TMessagesProj_App:assembleRelease
           fi
 
-      - name: Upload APK artifact (если успешно)
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
-        if: success()
         with:
           name: app-${{ github.event.inputs.build_type || 'release' }}
           path: TMessagesProj_App/build/outputs/apk/bundleAfat/${{ github.event.inputs.build_type || 'release' }}/app.apk
-
-      - name: Upload build log (всегда, для диагностики)
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: build-log
-          path: build.log
