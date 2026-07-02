@@ -40,6 +40,7 @@ jobs:
             "build-tools;35.0.0" \
             "platforms;android-35" \
             "platform-tools" \
+            "extras;android;m2repository" \
             "ndk;21.4.7075529"
 
       - name: Copy dx from Build Tools 30 to 35
@@ -60,19 +61,26 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      
+      - name: Fix TMessagesProj build.gradle
+        run: |
+          sed -i "/android {/a \    buildFeatures {\n        buildConfig true\n    }" TMessagesProj/build.gradle
+
+      - name: Clean project (ensures fresh R classes)
+        run: ./gradlew clean
+
       - name: Build APK
         env:
           ANDROID_HOME: ${{ env.ANDROID_HOME }}
           ANDROID_SDK_ROOT: ${{ env.ANDROID_HOME }}
           ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/21.4.7075529
           JAVA_HOME: ${{ env.JAVA_HOME }}
+          GRADLE_OPTS: -Xmx4096m -Dorg.gradle.jvmargs=-Xmx4096m
         run: |
           if [ "${{ github.event.inputs.build_type }}" == "debug" ]; then
-            ./gradlew --no-daemon -Dorg.gradle.jvmargs=-Xmx2048m \
-              :TMessagesProj_App:assembleDebug
+            ./gradlew --stacktrace :TMessagesProj_App:assembleDebug
           else
-            ./gradlew --no-daemon -Dorg.gradle.jvmargs=-Xmx2048m \
-              :TMessagesProj_App:assembleRelease
+            ./gradlew --stacktrace :TMessagesProj_App:assembleRelease
           fi
 
       - name: Upload APK artifact

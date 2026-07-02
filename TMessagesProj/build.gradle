@@ -215,7 +215,7 @@ android {
         }
     }
 
-    namespace 'org.telegram.messenger.web'
+    namespace 'org.telegram.messenger'
 }
 
 
