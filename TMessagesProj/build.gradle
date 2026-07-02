@@ -134,7 +134,7 @@ android {
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "true"
             buildConfigField "boolean", "BUNDLE", "false"
             buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
-            buildConfigField "int", "VERSION_CODE", APP_VERSION_CODE.toInteger()
+            buildConfigField "int", "VERSION_CODE", "1001"
             buildConfigField "int", "VERSION_NUM", "0"
         }
 
@@ -151,7 +151,7 @@ android {
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "true"
             buildConfigField "boolean", "BUNDLE", "false"
             buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
-            buildConfigField "int", "VERSION_CODE", APP_VERSION_CODE.toInteger()
+            buildConfigField "int", "VERSION_CODE", "1001"
             buildConfigField "int", "VERSION_NUM", "1"
         }
 
@@ -168,7 +168,7 @@ android {
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "false"
             buildConfigField "boolean", "BUNDLE", "false"
             buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
-            buildConfigField "int", "VERSION_CODE", APP_VERSION_CODE.toInteger()
+            buildConfigField "int", "VERSION_CODE", "1001"
             buildConfigField "int", "VERSION_NUM", "4"
         }
 
@@ -185,7 +185,7 @@ android {
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "true"
             buildConfigField "boolean", "BUNDLE", "false"
             buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
-            buildConfigField "int", "VERSION_CODE", APP_VERSION_CODE.toInteger()
+            buildConfigField "int", "VERSION_CODE", "1001"
             buildConfigField "int", "VERSION_NUM", "5"
         }
 
@@ -202,7 +202,7 @@ android {
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "false"
             buildConfigField "boolean", "BUNDLE", "false"
             buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
-            buildConfigField "int", "VERSION_CODE", APP_VERSION_CODE.toInteger()
+            buildConfigField "int", "VERSION_CODE", "1001"
             buildConfigField "int", "VERSION_NUM", "6"
         }
 
@@ -220,7 +220,7 @@ android {
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "true"
             buildConfigField "boolean", "BUNDLE", "false"
             buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
-            buildConfigField "int", "VERSION_CODE", APP_VERSION_CODE.toInteger()
+            buildConfigField "int", "VERSION_CODE", "1001"
             buildConfigField "int", "VERSION_NUM", "7"
         }
     }
