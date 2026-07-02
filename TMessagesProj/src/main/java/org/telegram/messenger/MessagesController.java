@@ -2819,7 +2819,7 @@ public class MessagesController extends BaseController implements NotificationCe
                     break;
                 }
                 case "stars_purchase_blocked": {
-                    // always false on testgram
+                    // always false on Jellogram
                     break;
                 }
                 case "premium_bot_username": {

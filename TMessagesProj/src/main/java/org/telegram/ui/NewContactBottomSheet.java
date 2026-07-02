@@ -941,7 +941,7 @@ public class NewContactBottomSheet extends BottomSheet implements AdapterView.On
         final Utilities.Callback<TLRPC.User> onUser = user -> {
             if (user == null) {
                 phoneStatusView.setImageDrawable(null);
-                underPhoneTextView.setText(AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag("This phone number is not on Testgram. **Invite >**", () -> {
+                underPhoneTextView.setText(AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag("This phone number is not on Jellogram. **Invite >**", () -> {
                     final Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse("sms:+" + phone));
                     intent.putExtra("sms_body", LocaleController.formatString(R.string.InviteText2, "https://telegram.org/dl"));
@@ -961,7 +961,7 @@ public class NewContactBottomSheet extends BottomSheet implements AdapterView.On
                         }
                     }), true, dp(8f / 3f), dp(1)));
                 } else {
-                    underPhoneTextView.setText("This phone number is on Testgram.");
+                    underPhoneTextView.setText("This phone number is on Jellogram.");
                 }
             }
             updateBottomTranslation(false);

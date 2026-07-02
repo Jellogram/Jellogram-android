@@ -97,7 +97,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:760348033671:android:f6afd7b67eae3860",
         "android_client_info": {
-          "package_name": "pro.testgram.messenger"
+          "package_name": "org.jellogram.messenger"
         }
       },
       "oauth_client": [
