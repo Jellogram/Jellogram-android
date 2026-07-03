@@ -9,7 +9,7 @@ import android.graphics.Path;
 import android.util.Property;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
-import android.view.animation.LinearOutSlowInInterpolator;
+import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 
 import androidx.annotation.NonNull;
 
