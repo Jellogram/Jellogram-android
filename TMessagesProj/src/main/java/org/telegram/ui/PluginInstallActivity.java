@@ -125,7 +125,7 @@ public class PluginInstallActivity extends BaseFragment {
         photoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         photoView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
         ((LinearLayout.LayoutParams) photoView.getLayoutParams()).gravity = Gravity.CENTER_HORIZONTAL;
-        photoView.setImageResource(R.drawable.msg_photo);
+        photoView.setImageResource(android.R.drawable.ic_menu_gallery);
 
         if (!TextUtils.isEmpty(pluginInfo.photoUrl)) {
             try {
