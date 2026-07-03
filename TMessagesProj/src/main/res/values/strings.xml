@@ -10688,6 +10688,21 @@ list of reactions.</string>
     <string name="FormattedDate">Date</string>
     <string name="ChannelMemberTags">Member Tags</string>
     <string name="ChannelMemberTagsInfo">Allow members to edit their custom tags.</string>
+    <string name="TelegramFaqUrl">https://telegram.org/faq#general-questions</string>
+    <string name="PrivacyPolicy">Privacy Policy</string>
+    <string name="PrivacyPolicyUrl">https://telegram.org/privacy</string>
+    <string name="TermsOfService">Terms of Service</string>
+    <string name="AddAccount">Add Account</string>
+    <string name="SwitchAccountHint">Switch account</string>
+    <string name="SelectAccount">Select account</string>
+    <string name="JellogramMd3">Material Design 3 switches</string>
+    <string name="JellogramCenterTitles">Center chat titles</string>
+    <string name="JellogramFaqLink">FAQ</string>
+    <string name="JellogramTosLink">Terms</string>
+    <string name="JellogramSecurityLink">Security</string>
+    <string name="JellogramWebsiteLink">Website</string>
+    <string name="JellogramChatLink">Chat</string>
+    <string name="JellogramTranslateLink">Translate</string>
     <!-- Jellogram Plugins -->
     <string name="JellogramPlugins">Plugins</string>
     <string name="JellogramPluginsTitle">Jellogram Plugins</string>

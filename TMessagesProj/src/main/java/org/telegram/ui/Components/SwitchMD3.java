@@ -9,6 +9,7 @@ import android.graphics.Path;
 import android.util.Property;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.animation.LinearOutSlowInInterpolator;
 
 import androidx.annotation.NonNull;
 
@@ -20,7 +21,7 @@ import me.vkryl.android.animator.FactorAnimator;
 
 public class SwitchMD3 extends View implements FactorAnimator.Target {
 
-    private final BoolAnimator animatorChecked = new BoolAnimator(0, this, CubicBezierInterpolator.EASE_OUT_QUINT, 200L, true);
+    private final BoolAnimator animatorChecked = new BoolAnimator(0, this, new LinearOutSlowInInterpolator(), 200L, true);
 
     private static final Property<SwitchMD3, Float> PROGRESS_PROPERTY =
         new SwitchMD3.ProgressFloatProperty();
@@ -74,7 +75,7 @@ public class SwitchMD3 extends View implements FactorAnimator.Target {
     private void animateToCheckedState(boolean checked) {
         ObjectAnimator animator = ObjectAnimator.ofFloat(this, PROGRESS_PROPERTY, checked ? 1f : 0f);
         animator.setDuration(200);
-        animator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
+        animator.setInterpolator(new LinearOutSlowInInterpolator());
         animator.start();
     }
 
