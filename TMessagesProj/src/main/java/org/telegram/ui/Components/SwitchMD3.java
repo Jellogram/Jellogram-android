@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.Property;
-import android.util.Property;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
