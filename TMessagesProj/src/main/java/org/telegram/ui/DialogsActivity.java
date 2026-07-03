@@ -489,6 +489,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     private boolean downloadsItemVisible;
     public ActionBarMenuItem searchItem;
     private ActionBarMenuItem optionsItem;
+    private ActionBarMenuItem chatsNavItem;
+    private ActionBarMenuItem contactsNavItem;
+    private ActionBarMenuItem settingsNavItem;
+    private ActionBarMenuItem profileNavItem;
     private ActionBarMenuItem speedItem;
     public static boolean switchingTheme;
     private ActionBarMenuItem doneItem;
@@ -3397,7 +3401,23 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         fragmentSearchFieldWatcher.setDoNotCloseAfterFieldEmpty();
 
         if (initialDialogsType == DIALOGS_TYPE_DEFAULT) {
-            optionsItem = menu.addItem(4, R.drawable.ic_ab_other);
+            // Jellogram: Add settings and profile icons to header instead of bottom tabs
+            settingsNavItem = menu.addItem(4, R.drawable.filled_profile_settings);
+            settingsNavItem.setContentDescription(getString(R.string.JellogramHeaderSettings));
+            settingsNavItem.setOnClickListener(v -> {
+                presentFragment(new SettingsActivity());
+            });
+
+            profileNavItem = menu.addItem(5, R.drawable.filled_profile_photo);
+            profileNavItem.setContentDescription(getString(R.string.JellogramHeaderProfile));
+            profileNavItem.setOnClickListener(v -> {
+                Bundle args = new Bundle();
+                args.putLong("user_id", UserConfig.getInstance(currentAccount).getClientUserId());
+                args.putBoolean("my_profile", true);
+                presentFragment(new ProfileActivity(args));
+            });
+
+            optionsItem = menu.addItem(6, R.drawable.ic_ab_other);
             optionsItem.setOnClickListener(v -> {
                 getContactsController().loadGlobalPrivacySetting();
                 showItemOptions();

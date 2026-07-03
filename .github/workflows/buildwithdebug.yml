@@ -75,7 +75,13 @@ jobs:
                   if (instance == null) instance = new JellogramSettings();
                   return instance;
               }
-              public boolean isShowUserId() { return false; }
+              public boolean isShowUserId() { return true; }
+              public boolean isShowChatId() { return true; }
+              public boolean isCamera2ApiEnabled() { return false; }
+              public int getAvatarCornerRadius() { return 100; }
+              public boolean isCenterChatTitles() { return false; }
+              public boolean isMd3Enabled() { return false; }
+              public boolean isShowBorder() { return false; }
           }
           EOF
 
@@ -86,10 +92,14 @@ jobs:
               TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java
           fi
 
-      - name: Add userIdRow field to ProfileActivity
+      - name: Add userIdRow and channelIdRow fields to ProfileActivity
         run: |
           if ! grep -q "private int userIdRow" TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java; then
             sed -i '/public class ProfileActivity/a \    private int userIdRow = -1;' \
+              TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java
+          fi
+          if ! grep -q "private int channelIdRow" TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java; then
+            sed -i '/private int userIdRow/a \    private int channelIdRow = -1;' \
               TMessagesProj/src/main/java/org/telegram/ui/ProfileActivity.java
           fi
 

@@ -1585,8 +1585,19 @@ public class AlertsCreator {
                         if (datacentersBytes != null) {
                             SerializedData data = new SerializedData(datacentersBytes);
                             supportUser = TLRPC.User.TLdeserialize(data, data.readInt32(false), false);
-                            if (supportUser != null && supportUser.id == 333000) {
-                                supportUser = null;
+                            FileLog.d("Jellogram supportUser loaded id=" + (supportUser != null ? supportUser.id : "null"));
+                            if (supportUser != null) {
+                                if (supportUser.id == 333000) {
+                                    supportUser = null;
+                                } else if (supportUser.deleted) {
+                                    FileLog.d("Jellogram supportUser is deleted, replacing with fresh support user");
+                                    supportUser.id = 333000;
+                                    supportUser.first_name = "JelloGram";
+                                    supportUser.last_name = "";
+                                    supportUser.deleted = false;
+                                    supportUser.bot = false;
+                                    supportUser.premium = false;
+                                }
                             }
                             data.cleanup();
                         }
@@ -1596,6 +1607,17 @@ public class AlertsCreator {
                     }
                 }
             }
+        }
+        if (supportUser != null) {
+            FileLog.d("Jellogram supportUser is deleted, normalizing to regular user");
+            supportUser.deleted = false;
+            supportUser.restricted = false;
+            supportUser.restriction_reason = null;
+            supportUser.min = false;
+            supportUser.bot = false;
+            supportUser.support = false;
+            supportUser.phone = "";
+            MessagesController.getInstance(currentAccount).putUser(supportUser, true);
         }
         if (supportUser == null) {
             final AlertDialog progressDialog = new AlertDialog(fragment.getParentActivity(), AlertDialog.ALERT_TYPE_SPINNER);

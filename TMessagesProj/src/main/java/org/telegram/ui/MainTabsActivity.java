@@ -751,6 +751,17 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.appUpdateLoading);
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.needSetDayNightTheme);
 
+        // Hide bottom tabs based on JellogramSettings
+        if (tabsViewWrapper != null) {
+            tabsViewWrapper.setVisibility(org.telegram.messenger.JellogramSettings.getInstance().isHideBottomTabs() ? View.GONE : View.VISIBLE);
+        }
+        if (fadeView != null) {
+            fadeView.setVisibility(org.telegram.messenger.JellogramSettings.getInstance().isHideBottomTabs() ? View.GONE : View.VISIBLE);
+        }
+        if (updateLayoutWrapper != null) {
+            updateLayoutWrapper.setVisibility(org.telegram.messenger.JellogramSettings.getInstance().isHideBottomTabs() ? View.GONE : View.VISIBLE);
+        }
+
         return super.onFragmentCreate();
     }
 

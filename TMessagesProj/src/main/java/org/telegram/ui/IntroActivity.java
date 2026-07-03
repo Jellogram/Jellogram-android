@@ -246,7 +246,7 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
         frameContainerView.addView(frameLayout2, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 0, 78, 0, 0));
 
         ImageView logoImageView = new ImageView(context);
-        logoImageView.setImageResource(R.mipmap.icon_launcher_round);
+        logoImageView.setImageResource(R.drawable.jellogram_intro_logo);
         logoImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         frameLayout2.addView(logoImageView, LayoutHelper.createFrame(ICON_WIDTH_DP, ICON_HEIGHT_DP, Gravity.CENTER));
 

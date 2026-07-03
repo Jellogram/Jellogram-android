@@ -249,6 +249,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
     public final static String EXTRA_FORCE_NOT_INTERNAL_APPS = "force_not_internal_apps";
     public final static String EXTRA_FORCE_REQUEST = "force_request";
     public final static Pattern PREFIX_T_ME_PATTERN = Pattern.compile("^(?:http(?:s|)://|)([A-z0-9-]+?)\\.t\\.me");
+    public final static Pattern PREFIX_J_ME_PATTERN = Pattern.compile("^(?:http(?:s|)://|)([A-z0-9-]+?)\\.jg\\.me");
+    public final static Pattern PREFIX_J_MIDGA3_PATTERN = Pattern.compile("^(?:http(?:s|)://|)([A-z0-9-]+?)\\.jg\\.midga3\\.ru");
 
     public static boolean isActive;
     public static boolean isResumed;
@@ -1923,10 +1925,24 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                 case "https": {
                                     String host = data.getHost().toLowerCase();
                                     Matcher prefixMatcher = PREFIX_T_ME_PATTERN.matcher(host);
+                                    Matcher jgPrefixMatcher = PREFIX_J_ME_PATTERN.matcher(host);
+                                    Matcher jgMidga3PrefixMatcher = PREFIX_J_MIDGA3_PATTERN.matcher(host);
                                     boolean isPrefix = prefixMatcher.find();
-                                    if (host.equals("telegram.me") || host.equals("t.me") || host.equals("telegram.dog") || isPrefix) {
+                                    boolean isJgPrefix = jgPrefixMatcher.find();
+                                    boolean isJgMidga3Prefix = jgMidga3PrefixMatcher.find();
+                                    if (host.equals("telegram.me") || host.equals("t.me") || host.equals("telegram.dog") || host.equals("jg.me") || host.equals("jg.midga3.ru") || isPrefix || isJgPrefix || isJgMidga3Prefix) {
                                         if (isPrefix) {
                                             data = Uri.parse("https://t.me/" + prefixMatcher.group(1) + (TextUtils.isEmpty(data.getPath()) ? "" : data.getPath()) + (TextUtils.isEmpty(data.getQuery()) ? "" : "?" + data.getQuery()));
+                                        } else if (isJgPrefix) {
+                                            data = Uri.parse("https://jg.me/" + jgPrefixMatcher.group(1) + (TextUtils.isEmpty(data.getPath()) ? "" : data.getPath()) + (TextUtils.isEmpty(data.getQuery()) ? "" : "?" + data.getQuery()));
+                                        } else if (isJgMidga3Prefix) {
+                                            data = Uri.parse("https://jg.midga3.ru/" + jgMidga3PrefixMatcher.group(1) + (TextUtils.isEmpty(data.getPath()) ? "" : data.getPath()) + (TextUtils.isEmpty(data.getQuery()) ? "" : "?" + data.getQuery()));
+                                        }
+                                        if (host.equals("jg.me") || host.equals("jg.midga3.ru") || isJgPrefix || isJgMidga3Prefix) {
+                                            String fragment = data.getFragment();
+                                            if (fragment != null && fragment.equals("crash")) {
+                                                throw new RuntimeException("Jellogram crash from " + host + "/#crash");
+                                            }
                                         }
                                         String path = data.getPath();
                                         if (path != null && path.length() > 1) {
@@ -2226,6 +2242,25 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                                     commentId = null;
                                                 }
                                             }
+                                        }
+                                    }
+                                    break;
+                                }
+                                case "jg": {
+                                    String url = data.toString();
+                                    if (url.startsWith("jg:crash") || url.startsWith("jg://crash")) {
+                                        throw new RuntimeException("Jellogram crash from jg://crash");
+                                    }
+                                    String jgResolve = url.replace("jg:resolve", "jg://jg.midga3.ru").replace("jg://resolve", "jg://jg.midga3.ru");
+                                    data = Uri.parse(jgResolve);
+                                    String domain = data.getQueryParameter("domain");
+                                    if (domain != null) {
+                                        username = domain;
+                                    }
+                                    botUser = data.getQueryParameter("start");
+                                    if (url.startsWith("jg:") || url.startsWith("jg://")) {
+                                        if (!actionBarLayout.getFragmentStack().isEmpty()) {
+                                            presentFragment(new JellogramSettingsActivity());
                                         }
                                     }
                                     break;

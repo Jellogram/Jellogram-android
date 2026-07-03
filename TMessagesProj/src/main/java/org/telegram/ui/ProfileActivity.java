@@ -648,6 +648,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private int phoneRow;
     private int noteRow;
     private int userIdRow = -1;
+    private int channelIdRow = -1;
     private int locationRow;
     private int userInfoRow;
     private int channelInfoRow;
@@ -4930,6 +4931,16 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     if (user != null) {
                         try {
                             AndroidUtilities.addToClipboard(String.valueOf(user.id));
+                            BulletinFactory.of(ProfileActivity.this).createCopyBulletin("ID скопирован").show();
+                        } catch (Exception e) {
+                            FileLog.e(e);
+                        }
+                    }
+                    return true;
+                } else if (position == channelIdRow) {
+                    if (currentChat != null) {
+                        try {
+                            AndroidUtilities.addToClipboard(String.valueOf(currentChat.id));
                             BulletinFactory.of(ProfileActivity.this).createCopyBulletin("ID скопирован").show();
                         } catch (Exception e) {
                             FileLog.e(e);
@@ -10336,6 +10347,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         noteRow = -1;
         userInfoRow = -1;
         userIdRow = -1;
+        channelIdRow = -1;
         locationRow = -1;
         channelInfoRow = -1;
         usernameRow = -1;
@@ -10679,6 +10691,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
                 if (ChatObject.isPublic(currentChat)) {
                     usernameRow = rowCount++;
+                }
+                if (currentChat != null && JellogramSettings.getInstance().isShowChatId()) {
+                    channelIdRow = rowCount++;
                 }
             }
             if (emptyRow < 0 && emptyRow2 < 0) {
@@ -13274,6 +13289,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         if (user != null) {
                             detailCell.setTextAndValue(String.valueOf(user.id), "ID", false);
                         }
+                    } else if (position == channelIdRow) {
+                        if (currentChat != null) {
+                            detailCell.setTextAndValue(String.valueOf(currentChat.id), "ID", false);
+                        }
                     } else if (position == noteRow) {
                         final TLRPC.UserFull userInfo = getMessagesController().getUserFull(userId);
                         if (userInfo == null) return;
@@ -14076,7 +14095,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (position == infoHeaderRow || position == membersHeaderRow || position == settingsSectionRow2 ||
                     position == numberSectionRow || position == helpHeaderRow || position == debugHeaderRow || position == botPermissionsHeader) {
                 return VIEW_TYPE_HEADER;
-            } else if (position == phoneRow || position == locationRow || position == numberRow || position == birthdayRow || position == userIdRow) {
+            } else if (position == phoneRow || position == locationRow || position == numberRow || position == birthdayRow || position == userIdRow || position == channelIdRow) {
                 return VIEW_TYPE_TEXT_DETAIL;
             } else if (position == usernameRow || position == setUsernameRow) {
                 return VIEW_TYPE_TEXT_DETAIL_MULTILINE;

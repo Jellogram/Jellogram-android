@@ -737,14 +737,15 @@ public class LocaleController {
                 }
             }
 
+            // Jellogram: always prefer Russian
+            if (currentInfo == null) {
+                currentInfo = getLanguageFromDict("ru");
+            }
             if (currentInfo == null && systemDefaultLocale.getLanguage() != null) {
                 currentInfo = getLanguageFromDict(systemDefaultLocale.getLanguage());
             }
             if (currentInfo == null) {
                 currentInfo = getLanguageFromDict(getLocaleString(systemDefaultLocale));
-                if (currentInfo == null) {
-                    currentInfo = getLanguageFromDict("en");
-                }
             }
 
             applyLanguage(currentInfo, override, true, UserConfig.selectedAccount);

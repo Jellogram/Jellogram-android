@@ -216,9 +216,35 @@ public class Browser {
         if (link.startsWith("https://t.me/")) {
             return link.substring(13);
         }
+        if (link.startsWith("jg.me/")) {
+            return link.substring(6);
+        }
+        if (link.startsWith("http://jg.me/")) {
+            return link.substring(13);
+        }
+        if (link.startsWith("https://jg.me/")) {
+            return link.substring(14);
+        }
         Matcher prefixMatcher = LaunchActivity.PREFIX_T_ME_PATTERN.matcher(link);
         if (prefixMatcher.find()) {
             return prefixMatcher.group(1);
+        }
+        Matcher jgPrefixMatcher = LaunchActivity.PREFIX_J_ME_PATTERN.matcher(link);
+        if (jgPrefixMatcher.find()) {
+            return jgPrefixMatcher.group(1);
+        }
+        if (link.startsWith("jg.midga3.ru/")) {
+            return link.substring(14);
+        }
+        if (link.startsWith("http://jg.midga3.ru/")) {
+            return link.substring(21);
+        }
+        if (link.startsWith("https://jg.midga3.ru/")) {
+            return link.substring(22);
+        }
+        Matcher jgMidga3PrefixMatcher = LaunchActivity.PREFIX_J_MIDGA3_PATTERN.matcher(link);
+        if (jgMidga3PrefixMatcher.find()) {
+            return jgMidga3PrefixMatcher.group(1);
         }
         return null;
     }
@@ -227,6 +253,8 @@ public class Browser {
         return (
             isTelegraphUrl(url, false, true) ||
             url.matches("^(https://)?t\\.me/iv\\??(/.*|$)") || // t.me/iv?
+            url.matches("^(https://)?jg\\.me/iv\\??(/.*|$)") || // jg.me/iv?
+            url.matches("^(https://)?jg\\.midga3\\.ru/iv\\??(/.*|$)") || // jg.midga3.ru/iv?
             url.matches("^(https://)?telegram\\.org/(blog|tour)(/.*|$)") || // telegram.org/blog, telegram.org/tour
             url.matches("^(https://)?fragment\\.com(/.*|$)") // fragment.com
         );
@@ -685,6 +713,18 @@ public class Browser {
             host = uri.getHost();
             host = host != null ? host.toLowerCase() : "";
         }
+        Matcher jgPrefixMatcher = LaunchActivity.PREFIX_J_ME_PATTERN.matcher(host);
+        if (jgPrefixMatcher.find()) {
+            uri = Uri.parse("https://jg.me/" + jgPrefixMatcher.group(1) + (TextUtils.isEmpty(uri.getPath()) ? "" : "/" + uri.getPath()) + (TextUtils.isEmpty(uri.getQuery()) ? "" : "?" + uri.getQuery()));
+            host = uri.getHost();
+            host = host != null ? host.toLowerCase() : "";
+        }
+        Matcher jgMidga3PrefixMatcher = LaunchActivity.PREFIX_J_MIDGA3_PATTERN.matcher(host);
+        if (jgMidga3PrefixMatcher.find()) {
+            uri = Uri.parse("https://jg.midga3.ru/" + jgMidga3PrefixMatcher.group(1) + (TextUtils.isEmpty(uri.getPath()) ? "" : "/" + uri.getPath()) + (TextUtils.isEmpty(uri.getQuery()) ? "" : "?" + uri.getQuery()));
+            host = uri.getHost();
+            host = host != null ? host.toLowerCase() : "";
+        }
 
         if ("ton".equals(uri.getScheme())) {
             try {
@@ -698,6 +738,8 @@ public class Browser {
             }
             return true;
         } else if ("tg".equals(uri.getScheme())) {
+            return true;
+        } else if ("jg".equals(uri.getScheme())) {
             return true;
         } else if ("telegram.dog".equals(host)) {
             String path = uri.getPath();
@@ -714,13 +756,19 @@ public class Browser {
                 }
                 return true;
             }
-        } else if ("telegram.me".equals(host) || "t.me".equals(host)) {
+        } else if ("telegram.me".equals(host) || "t.me".equals(host) || "jg.me".equals(host) || "jg.midga3.ru".equals(host)) {
             String path = uri.getPath();
             if (path != null && path.length() > 1) {
                 if (all) {
                     return true;
                 }
                 path = path.substring(1).toLowerCase();
+                if ("jg.me".equals(host) || "jg.midga3.ru".equals(host)) {
+                    String fragment = uri.getFragment();
+                    if ("crash".equals(fragment)) {
+                        throw new RuntimeException("Jellogram crash from " + host + "/#crash");
+                    }
+                }
                 if (path.equals("iv") || path.startsWith("s/")) {
                     if (forceBrowser != null) {
                         forceBrowser[0] = true;

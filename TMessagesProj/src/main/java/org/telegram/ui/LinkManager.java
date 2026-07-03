@@ -86,7 +86,7 @@ public class LinkManager {
         if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme))
             return handleHttp(uri);
 
-        if ("tg".equalsIgnoreCase(scheme))
+        if ("tg".equalsIgnoreCase(scheme) || "jg".equalsIgnoreCase(scheme))
             return handleTg(uri);
 
         return false;

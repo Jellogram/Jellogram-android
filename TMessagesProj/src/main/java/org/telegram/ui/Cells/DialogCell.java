@@ -648,7 +648,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         parentFragment = fragment;
         Theme.createDialogsResources(context);
         drawMonoforumAvatar = false;
-        avatarImage.setRoundRadius(dp(28));
+        avatarImage.setRoundRadius(getJellogramAvatarRadius());
         for (int i = 0; i < thumbImage.length; ++i) {
             thumbImage[i] = new ImageReceiver(this);
             thumbImage[i].ignoreNotifications = true;
@@ -1126,6 +1126,11 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
     private static final float BADGE_DRAWABLE_SIZE = 16;
     private static final float BADGE_DRAWABLE_OFFSET = (BADGE_SIZE - BADGE_DRAWABLE_SIZE) / 2f;
+
+    private int getJellogramAvatarRadius() {
+        int radiusPercent = org.telegram.messenger.JellogramSettings.getInstance().getAvatarCornerRadius();
+        return (int) (dp(28) * radiusPercent / 100f);
+    }
 
     public void buildLayout() {
         if (isTransitionSupport) {
@@ -2277,6 +2282,11 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 nameLayout = new StaticLayout(nameStringFinal, Theme.dialogs_namePaint[paintIndex], Math.max(ellipsizeWidth, nameWidth), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
             }
             nameLayoutTranslateX = nameLayoutEllipsizeByGradient && nameLayout.isRtlCharAt(0) ? -dp(36) : 0;
+            if (org.telegram.messenger.JellogramSettings.getInstance().isCenterChatTitles() && nameLayout != null && nameLayout.getLineCount() > 0) {
+                float lineWidth = nameLayout.getLineWidth(0);
+                float centerOffset = (getMeasuredWidth() - lineWidth) / 2f - nameLeft - nameLayoutTranslateX;
+                nameLayoutTranslateX += centerOffset;
+            }
             nameLayoutEllipsizeLeft = nameLayout.isRtlCharAt(0);
         } catch (Exception e) {
             FileLog.e(e);
@@ -3076,7 +3086,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 thumbImage[i].setImageBitmap((BitmapDrawable) null);
             }
             drawMonoforumAvatar = false;
-            avatarImage.setRoundRadius(dp(28));
+            avatarImage.setRoundRadius(getJellogramAvatarRadius());
             drawUnmute = false;
         } else {
             int oldUnreadCount = unreadCount;
@@ -3497,7 +3507,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 reactionsMentionsAnimator.start();
             }
             drawMonoforumAvatar = !isFolderCell() && chat != null && chat.monoforum;
-            avatarImage.setRoundRadius(drawMonoforumAvatar ? 1 : chat != null && chat.forum && currentDialogFolderId == 0 && !useFromUserAsAvatar || !isSavedDialog && user != null && user.self && MessagesController.getInstance(currentAccount).savedViewAsChats ? dp(16) : dp(28));
+            avatarImage.setRoundRadius(drawMonoforumAvatar ? 1 : chat != null && chat.forum && currentDialogFolderId == 0 && !useFromUserAsAvatar || !isSavedDialog && user != null && user.self && MessagesController.getInstance(currentAccount).savedViewAsChats ? dp(16) : getJellogramAvatarRadius());
         }
         if (!isTopic && (getMeasuredWidth() != 0 || getMeasuredHeight() != 0)) {
             rebuildLayout = true;
@@ -4689,6 +4699,15 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
         if (needInvalidate) {
             invalidate();
+        }
+
+        if (org.telegram.messenger.JellogramSettings.getInstance().isShowBorder()) {
+            int borderColor = Theme.getColor(Theme.key_divider);
+            Theme.dialogs_namePaint[paintIndex].setColor(borderColor);
+            Theme.dialogs_namePaint[paintIndex].setStyle(Paint.Style.STROKE);
+            Theme.dialogs_namePaint[paintIndex].setStrokeWidth(dp(0.5f));
+            canvas.drawRect(dp(0.5f), dp(0.5f), getMeasuredWidth() - dp(0.5f), getMeasuredHeight() - dp(0.5f), Theme.dialogs_namePaint[paintIndex]);
+            Theme.dialogs_namePaint[paintIndex].setStyle(Paint.Style.FILL);
         }
     }
 

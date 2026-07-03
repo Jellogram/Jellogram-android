@@ -3451,6 +3451,11 @@ public class Theme {
     public static final int key_switchTrackBlueSelectorChecked = colorsCount++;
     public static final int key_switch2Track = colorsCount++;
     public static final int key_switch2TrackChecked = colorsCount++;
+    public static final int key_md3SwitchTrack = colorsCount++;
+    public static final int key_md3SwitchTrackChecked = colorsCount++;
+    public static final int key_md3SwitchThumb = colorsCount++;
+    public static final int key_md3SwitchThumbChecked = colorsCount++;
+    public static final int key_md3SwitchIconChecked = colorsCount++;
     public static final int key_checkboxSquareBackground = colorsCount++;
     public static final int key_checkboxSquareCheck = colorsCount++;
     public static final int key_checkboxSquareUnchecked = colorsCount++;

@@ -41,6 +41,8 @@ public class JellogramCrashHandler implements Thread.UncaughtExceptionHandler {
         } catch (Exception e) {
             FileLog.e(e);
         }
+
+        JellogramSettings.setCrashDialogShown(true);
         
         if (defaultHandler != null) {
             defaultHandler.uncaughtException(thread, throwable);

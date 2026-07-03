@@ -122,6 +122,11 @@ public class ThemeColors {
         defaultColors[key_switchTrackBlueSelectorChecked] = 0x21024781;
         defaultColors[key_switch2Track] = 0xfff57e7e;
         defaultColors[key_switch2TrackChecked] = TELEGRAM_COLOR;
+        defaultColors[key_md3SwitchTrack] = 0xffa6adb3;
+        defaultColors[key_md3SwitchTrackChecked] = TELEGRAM_COLOR;
+        defaultColors[key_md3SwitchThumb] = 0xffffffff;
+        defaultColors[key_md3SwitchThumbChecked] = 0xffffffff;
+        defaultColors[key_md3SwitchIconChecked] = 0xff333333;
         defaultColors[key_checkboxSquareBackground] = TELEGRAM_COLOR;
         defaultColors[key_checkboxSquareCheck] = 0xffffffff;
         defaultColors[key_checkboxSquareUnchecked] = 0xff737373;
@@ -934,6 +939,11 @@ public class ThemeColors {
         colorKeysMap.put(key_switchTrackBlueSelectorChecked, "switchTrackBlueSelectorChecked");
         colorKeysMap.put(key_switch2Track, "switch2Track");
         colorKeysMap.put(key_switch2TrackChecked, "switch2TrackChecked");
+        colorKeysMap.put(key_md3SwitchTrack, "md3SwitchTrack");
+        colorKeysMap.put(key_md3SwitchTrackChecked, "md3SwitchTrackChecked");
+        colorKeysMap.put(key_md3SwitchThumb, "md3SwitchThumb");
+        colorKeysMap.put(key_md3SwitchThumbChecked, "md3SwitchThumbChecked");
+        colorKeysMap.put(key_md3SwitchIconChecked, "md3SwitchIconChecked");
         colorKeysMap.put(key_checkboxSquareBackground, "checkboxSquareBackground");
         colorKeysMap.put(key_checkboxSquareCheck, "checkboxSquareCheck");
         colorKeysMap.put(key_checkboxSquareUnchecked, "checkboxSquareUnchecked");

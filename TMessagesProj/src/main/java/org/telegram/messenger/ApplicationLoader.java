@@ -49,6 +49,13 @@ import java.io.File;
 import java.util.Locale;
 
 public class ApplicationLoader extends Application {
+    public static void showCrashNotification() {
+        JellogramCrashNotifier.showCrashNotification(applicationContext);
+    }
+
+    public static void hideCrashNotification() {
+        JellogramCrashNotifier.hideCrashNotification(applicationContext);
+    }
 
     public static ApplicationLoader applicationLoaderInstance;
 
@@ -342,6 +349,10 @@ public class ApplicationLoader extends Application {
         
         // Установка обработчика крашей для Jellogram
         Thread.setDefaultUncaughtExceptionHandler(new JellogramCrashHandler(applicationContext));
+
+        if (org.telegram.messenger.JellogramSettings.isCrashDialogShown()) {
+            showCrashNotification();
+        }
 
         AndroidUtilities.runOnUIThread(ApplicationLoader::startPushService);
 

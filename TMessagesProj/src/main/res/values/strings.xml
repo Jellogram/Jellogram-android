@@ -163,6 +163,9 @@
     <string name="ChangeEmojiStatus">Change Status</string>
     <string name="Settings">Settings</string>
     <string name="Refresh">Refresh</string>
+    <!-- Jellogram header icons -->
+    <string name="JellogramHeaderSettings">Settings</string>
+    <string name="JellogramHeaderProfile">Profile</string>
     <string name="AddressPlaceholder">Search %s or type URL</string>
     <string name="Contacts">Contacts</string>
     <string name="NewGroup">New Group</string>
@@ -2418,17 +2421,19 @@
     <string name="TelegramFAQ">Jellogram FAQ</string>
     <string name="TelegramFaq">Jellogram FAQ</string>
     <string name="TelegramFeatures">Jellogram Features</string>
-    <string name="TelegramFeaturesUrl">https://t.me/JellogramTips</string>
-    <string name="AddAccount">Add Account</string>
-    <string name="SwitchAccountHint">"Long tap to switch accounts"</string>
-    <string name="SelectAccount">Select Account</string>
-    <string name="TelegramFaqUrl">https://telegram.org/faq</string>
-    <string name="PrivacyPolicy">Privacy Policy</string>
-    <string name="TermsOfService">Terms of Service</string>
+    <string name="TelegramFeaturesUrl">https://jg.me/JellogramTips</string>
+    <string name="JellogramChannelLink">Channel</string>
+    <string name="JellogramChatLink">Chat</string>
+    <string name="JellogramTranslateLink">Translate</string>
+    <string name="JellogramWebsiteLink">Website</string>
+    <string name="JellogramFaqLink">FAQ</string>
+    <string name="JellogramTosLink">Terms</string>
+    <string name="JellogramSecurityLink">Security</string>
+    <!-- Jellogram Plugins -->
     <string name="TermsOfServiceLogin">By signing up,\nyou agree to the *Terms of Service*.</string>
-    <string name="PrivacyPolicyUrl">https://telegram.org/privacy</string>
-    <string name="TermsOfServiceUrl">https://telegram.org/tos</string>
-    <string name="WebAppDisclaimerUrl">https://telegram.org/tos/mini-apps</string>
+    <string name="PrivacyPolicyUrl">https://jg.me/privacy</string>
+    <string name="TermsOfServiceUrl">https://jg.me/tos</string>
+    <string name="WebAppDisclaimerUrl">https://jg.me/tos/mini-apps</string>
     <string name="DeleteLocalizationTitle">Delete language pack</string>
     <string name="DeleteLocalizationText">Are you sure you want to delete **%1$s** language pack?</string>
     <string name="IncorrectLocalization">Incorrect localization file</string>
@@ -10362,6 +10367,26 @@
     <string name="JellogramSettingsGeneral">General</string>
     <string name="JellogramSettingsSlider">Placeholder slider</string>
     <string name="JellogramSettingsToggle">Placeholder toggle</string>
+    <string name="JellogramCategoryGeneral">Основные</string>
+    <string name="JellogramCategoryAppearance">Оформление</string>
+    <string name="JellogramCategoryChats">Чаты</string>
+    <string name="JellogramCategoryLinks">Ссылки</string>
+    <string name="JellogramCategoryOther">Другое</string>
+    <string name="JellogramShowUserId">Показывать ID пользователя</string>
+    <string name="JellogramShowChatId">Показывать ID чата/канала</string>
+    <string name="JellogramCamera2">Использовать Camera 2 API</string>
+    <string name="JellogramAvatarRadius">Скругление аватарок</string>
+    <string name="JellogramHideBottomTabs">Hide bottom tabs</string>
+    <string name="JellogramMd3Switches">Material Design 3 switches</string>
+    <string name="JellogramDisablePremiumStatusEffects">Disable premium badge and status effects</string>
+    <string name="JellogramShowBorder">Границы чатов</string>
+    <string name="JellogramChannelLink">Канал</string>
+    <string name="JellogramChatLink">Чат</string>
+    <string name="JellogramTranslateLink">Перевод</string>
+    <string name="JellogramWebsiteLink">Веб-сайт</string>
+    <string name="JellogramIdCopied">ID скопирован</string>
+    <string name="JellogramCrashTitle">jg.me/#crash</string>
+    <string name="JellogramCrashDesc">Принудительный краш с логами</string>
     <string name="AddAccountInfo1_one">You can add %d additional account.</string>
     <string name="AddAccountInfo1_other">You can add %d additional accounts.</string>
     <string name="AddAccountInfo2_one">Subscribe to **Jellogram Premium** to use up to %d account.</string>
@@ -10658,4 +10683,20 @@
     <string name="FormattedDate">Date</string>
     <string name="ChannelMemberTags">Member Tags</string>
     <string name="ChannelMemberTagsInfo">Allow members to edit their custom tags.</string>
+    <!-- Jellogram Plugins -->
+    <string name="JellogramPlugins">Plugins</string>
+    <string name="JellogramPluginsTitle">Jellogram Plugins</string>
+    <string name="JellogramPluginInstall">Install Plugin</string>
+    <string name="JellogramPluginInstallTitle">Install Plugin</string>
+    <string name="JellogramPluginInstalled">Plugin installed</string>
+    <string name="JellogramPluginEnabled">Plugin enabled</string>
+    <string name="JellogramPluginDisabled">Plugin disabled</string>
+    <string name="JellogramPluginNotFound">Plugin file not found</string>
+    <string name="JellogramPluginInvalid">Invalid plugin file</string>
+    <string name="JellogramPluginInstallConfirm">Install %1$s?</string>
+    <string name="JellogramPluginsEnable">Enable</string>
+    <string name="JellogramPluginsDisable">Disable</string>
+    <!-- Jellogram Header -->
+    <string name="JellogramHeaderSettings">Settings</string>
+    <string name="JellogramHeaderProfile">Profile</string>
 </resources>
