@@ -10689,9 +10689,6 @@ list of reactions.</string>
     <string name="JellogramFaqLink">FAQ</string>
     <string name="JellogramTosLink">Terms</string>
     <string name="JellogramSecurityLink">Security</string>
-    <string name="JellogramWebsiteLink">Website</string>
-    <string name="JellogramChatLink">Chat</string>
-    <string name="JellogramTranslateLink">Translate</string>
     <!-- Jellogram Plugins -->
     <string name="JellogramPlugins">Plugins</string>
     <string name="JellogramPluginsTitle">Jellogram Plugins</string>
