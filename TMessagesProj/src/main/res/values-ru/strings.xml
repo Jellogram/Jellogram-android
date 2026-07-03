@@ -295,10 +295,6 @@
     <string name="JellogramPluginNotFound">Файл плагина не найден</string>
     <string name="JellogramPluginInvalid">Неверный файл плагина</string>
     <string name="JellogramPluginInstallConfirm">Установить %1$s?</string>
-    <string name="JellogramWebsiteLink">Веб-сайт</string>
-    <string name="JellogramFaqLink">FAQ</string>
-    <string name="JellogramTosLink">Terms</string>
-    <string name="JellogramSecurityLink">Security</string>
     <string name="JellogramIdCopied">ID скопирован</string>
     <string name="JellogramCrashTitle">jg.me/#crash</string>
     <string name="JellogramCrashDesc">Принудительный краш с логами</string>
