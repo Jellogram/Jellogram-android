@@ -2422,13 +2422,6 @@
     <string name="TelegramFaq">Jellogram FAQ</string>
     <string name="TelegramFeatures">Jellogram Features</string>
     <string name="TelegramFeaturesUrl">https://jg.me/JellogramTips</string>
-    <string name="JellogramChannelLink">Channel</string>
-    <string name="JellogramChatLink">Chat</string>
-    <string name="JellogramTranslateLink">Translate</string>
-    <string name="JellogramWebsiteLink">Website</string>
-    <string name="JellogramFaqLink">FAQ</string>
-    <string name="JellogramTosLink">Terms</string>
-    <string name="JellogramSecurityLink">Security</string>
     <!-- Jellogram Plugins -->
     <string name="TermsOfServiceLogin">By signing up,\nyou agree to the *Terms of Service*.</string>
     <string name="PrivacyPolicyUrl">https://jg.me/privacy</string>
