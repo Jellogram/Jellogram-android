@@ -10690,6 +10690,4 @@
     <string name="JellogramPluginsEnable">Enable</string>
     <string name="JellogramPluginsDisable">Disable</string>
     <!-- Jellogram Header -->
-    <string name="JellogramHeaderSettings">Settings</string>
-    <string name="JellogramHeaderProfile">Profile</string>
 </resources>
