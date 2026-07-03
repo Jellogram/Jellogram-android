@@ -37,6 +37,7 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.SeekBarView;
 import org.telegram.ui.Components.Switch;
+import org.telegram.ui.Components.SwitchMD3;
 
 import java.util.ArrayList;
 import java.util.List;
