@@ -2424,9 +2424,19 @@
     <string name="TelegramFeaturesUrl">https://jg.me/JellogramTips</string>
     <!-- Jellogram Plugins -->
     <string name="TermsOfServiceLogin">By signing up,\nyou agree to the *Terms of Service*.</string>
-    <string name="PrivacyPolicyUrl">https://jg.me/privacy</string>
     <string name="TermsOfServiceUrl">https://jg.me/tos</string>
     <string name="WebAppDisclaimerUrl">https://jg.me/tos/mini-apps</string>
+    <string name="TelegramFaqUrl">https://telegram.org/faq\#general-questions</string>
+    <string name="PrivacyPolicy">Privacy Policy</string>
+    <string name="TermsOfService">Terms of Service</string>
+    <string name="AddAccount">Add Account</string>
+    <string name="SwitchAccountHint">Switch account</string>
+    <string name="SelectAccount">Select account</string>
+    <string name="JellogramMd3">Material Design 3 switches</string>
+    <string name="JellogramCenterTitles">Center chat titles</string>
+    <string name="JellogramFaqLink">FAQ</string>
+    <string name="JellogramTosLink">Terms</string>
+    <string name="JellogramSecurityLink">Security</string>
     <string name="DeleteLocalizationTitle">Delete language pack</string>
     <string name="DeleteLocalizationText">Are you sure you want to delete **%1$s** language pack?</string>
     <string name="IncorrectLocalization">Incorrect localization file</string>
@@ -6736,8 +6746,10 @@
     <string name="SortByReactions">Reactions First</string>
     <string name="SortByReposts">Reposts First</string>
     <string name="SortByTime">Newest First</string>
-    <string name="StoryViewsSortDescription">Choose the order for the  list of viewers.</string>
-    <string name="StoryReactionsSortDescription">Choose the order for the  list of reactions.</string>
+    <string name="StoryViewsSortDescription">Choose the order for the 
+list of viewers.</string>
+    <string name="StoryReactionsSortDescription">Choose the order for the 
+list of reactions.</string>
     <string name="NoContactsViewed">None of your contacts viewed this story.</string>
     <string name="Viewers">Viewers</string>
     <string name="StealthModeConfirmTitle">You are in Stealth Mode now</string>

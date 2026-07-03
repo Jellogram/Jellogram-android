@@ -20,12 +20,7 @@ import me.vkryl.android.animator.FactorAnimator;
 
 public class SwitchMD3 extends View implements FactorAnimator.Target {
 
-    private final BoolAnimator animatorChecked = new BoolAnimator(0, new Runnable() {
-        @Override
-        public void run() {
-            // empty
-        }
-    }, CubicBezierInterpolator.EASE_OUT_QUINT, 200L, true);
+    private final BoolAnimator animatorChecked = new BoolAnimator(0, this, CubicBezierInterpolator.EASE_OUT_QUINT, 200L, true);
 
     private static final Property<SwitchMD3, Float> PROGRESS_PROPERTY =
         new SwitchMD3.ProgressFloatProperty();
@@ -158,13 +153,11 @@ public class SwitchMD3 extends View implements FactorAnimator.Target {
         invalidate();
     }
 
-    @Override
     public void setProgress(float progress) {
         this.progress = progress;
         invalidate();
     }
 
-    @Override
     public float getProgress() {
         return progress;
     }
