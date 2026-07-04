@@ -53,8 +53,8 @@ public class PluginCell extends FrameLayout {
     public void setPlugin(LuaPlugin plugin) {
         this.plugin = plugin;
         nameView.setText(plugin.getName());
-        String version = plugin.getMetadata(\"version\");
-        versionView.setText(version != null ? \"v\" + version : \"v1.0\");
+        String version = plugin.getMetadata("version");
+        versionView.setText(version != null ? "v" + version : "v1.0");
     }
 }
 ", "path": "TMessagesProj/src/main/java/org/telegram/ui/Cells/PluginCell.java"}, "repo": "Jellogram-android"}
