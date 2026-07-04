@@ -137,6 +137,8 @@ public class StarsController {
         this.ton = ton;
     }
 
+    public final java.util.ArrayList<Runnable> pendingBalanceCallbacks = new java.util.ArrayList<>();
+
     public void cancelPendingRequests() {
         pendingBalanceCallbacks.clear();
     }

@@ -3,8 +3,6 @@ package org.telegram.ui;
 import static org.telegram.messenger.AndroidUtilities.dp;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -43,7 +41,6 @@ import java.util.List;
 
 public class JellogramSettingsActivity extends BaseFragment {
 
-    private static final String KEY_CATEGORY = "category";
     public static final int CATEGORY_MAIN = 0;
     public static final int CATEGORY_GENERAL = 1;
     public static final int CATEGORY_APPEARANCE = 2;
@@ -56,9 +53,7 @@ public class JellogramSettingsActivity extends BaseFragment {
     }
 
     public JellogramSettingsActivity(int category) {
-        Bundle args = new Bundle();
-        args.putInt(KEY_CATEGORY, category);
-        setArguments(args);
+        this.currentCategory = category;
     }
 
     private int currentCategory;
@@ -100,7 +95,7 @@ public class JellogramSettingsActivity extends BaseFragment {
     public View createView(Context context) {
         settings = JellogramSettings.getInstance();
         pluginManager = PluginManager.getInstance();
-        currentCategory = getArguments() != null ? getArguments().getInt(KEY_CATEGORY, CATEGORY_MAIN) : CATEGORY_MAIN;
+        // currentCategory is set in constructor
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(false);

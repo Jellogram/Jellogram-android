@@ -1589,9 +1589,6 @@ public class MessagesController extends BaseController implements NotificationCe
         chatReadMarkSizeThreshold = mainPreferences.getInt("chatReadMarkSizeThreshold", 100);
         chatReadMarkExpirePeriod = mainPreferences.getInt("chatReadMarkExpirePeriod", 7 * 86400);
         ringtoneDurationMax = mainPreferences.getInt("ringtoneDurationMax", 5);
-        ringtoneSizeMax = mainPreferences.getInnces.getInt("chatReadMarkSizeThreshold", 100);
-        chatReadMarkExpirePeriod = mainPreferences.getInt("chatReadMarkExpirePeriod", 7 * 86400);
-        ringtoneDurationMax = mainPreferences.getInt("ringtoneDurationMax", 5);
         ringtoneSizeMax = mainPreferences.getInt("ringtoneSizeMax", 1024_00);
         pmReadDateExpirePeriod = mainPreferences.getInt("pmReadDateExpirePeriod", 7 * 86400);
         suggestStickersApiOnly = mainPreferences.getBoolean("suggestStickersApiOnly", false);
