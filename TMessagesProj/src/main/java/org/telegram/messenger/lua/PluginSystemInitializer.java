@@ -1,1 +1,62 @@
-package org.telegram.messenger.lua;\n\nimport android.content.Context;\nimport org.telegram.messenger.ApplicationLoader;\nimport org.telegram.messenger.FileLog;\n\n/**\n * Plugin System Initializer\n * Called from Application.onCreate() or MessagesController\n */\npublic class PluginSystemInitializer {\n    private static final String TAG = \"PluginSystemInit\";\n    private static boolean initialized = false;\n    private static PluginManager pluginManager;\n\n    /**\n     * Initialize plugin system\n     */\n    public static void initialize() {\n        if (initialized) {\n            return;\n        }\n\n        try {\n            Context context = ApplicationLoader.applicationContext;\n            pluginManager = PluginManager.getInstance(context);\n            pluginManager.loadAllPlugins();\n            initialized = true;\n            FileLog.d(TAG + \": Plugin system initialized successfully\");\n        } catch (Exception e) {\n            FileLog.e(TAG + \": Failed to initialize plugin system\", e);\n        }\n    }\n\n    /**\n     * Get plugin manager\n     */\n    public static PluginManager getPluginManager() {\n        if (!initialized) {\n            initialize();\n        }\n        return pluginManager;\n    }\n\n    /**\n     * Shutdown plugin system\n     */\n    public static void shutdown() {\n        if (pluginManager != null) {\n            pluginManager.shutdown();\n            initialized = false;\n        }\n    }\n\n    /**\n     * Check if system is initialized\n     */\n    public static boolean isInitialized() {\n        return initialized;\n    }\n}\n", "path": "TMessagesProj/src/main/java/org/telegram/messenger/lua/PluginSystemInitializer.java"}, "repo": "Jellogram-android"}
+package org.telegram.messenger.lua;
+
+import android.content.Context;
+import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.FileLog;
+
+/**
+ * Plugin System Initializer
+ * Called from Application.onCreate() or MessagesController
+ */
+public class PluginSystemInitializer {
+    private static final String TAG = \"PluginSystemInit\";
+    private static boolean initialized = false;
+    private static PluginManager pluginManager;
+
+    /**
+     * Initialize plugin system
+     */
+    public static void initialize() {
+        if (initialized) {
+            return;
+        }
+
+        try {
+            Context context = ApplicationLoader.applicationContext;
+            pluginManager = PluginManager.getInstance(context);
+            pluginManager.loadAllPlugins();
+            initialized = true;
+            FileLog.d(TAG + \": Plugin system initialized successfully\");
+        } catch (Exception e) {
+            FileLog.e(TAG + \": Failed to initialize plugin system\", e);
+        }
+    }
+
+    /**
+     * Get plugin manager
+     */
+    public static PluginManager getPluginManager() {
+        if (!initialized) {
+            initialize();
+        }
+        return pluginManager;
+    }
+
+    /**
+     * Shutdown plugin system
+     */
+    public static void shutdown() {
+        if (pluginManager != null) {
+            pluginManager.shutdown();
+            initialized = false;
+        }
+    }
+
+    /**
+     * Check if system is initialized
+     */
+    public static boolean isInitialized() {
+        return initialized;
+    }
+}
+", "path": "TMessagesProj/src/main/java/org/telegram/messenger/lua/PluginSystemInitializer.java"}, "repo": "Jellogram-android"}
