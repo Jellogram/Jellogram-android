@@ -57,4 +57,3 @@ public class PluginCell extends FrameLayout {
         versionView.setText(version != null ? "v" + version : "v1.0");
     }
 }
-", "path": "TMessagesProj/src/main/java/org/telegram/ui/Cells/PluginCell.java"}, "repo": "Jellogram-android"}

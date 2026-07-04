@@ -59,4 +59,3 @@ public class PluginSystemInitializer {
         return initialized;
     }
 }
-", "path": "TMessagesProj/src/main/java/org/telegram/messenger/lua/PluginSystemInitializer.java"}, "repo": "Jellogram-android"}
