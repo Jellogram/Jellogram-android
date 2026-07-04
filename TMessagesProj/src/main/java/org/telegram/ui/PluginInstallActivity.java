@@ -44,14 +44,14 @@ public class PluginInstallActivity {
             return;
         }
 
-        PluginManager.PluginInfo pluginInfo;
-        boolean alreadyInstalled;
+        final PluginManager.PluginInfo[] pluginInfoRef = {null};
+        final boolean[] alreadyInstalledRef = {false};
 
         try {
             PluginManager.PluginInfo existing = PluginManager.getInstance().getPlugin(file.getName().replace(".jello", ""));
             if (existing != null) {
-                pluginInfo = existing;
-                alreadyInstalled = true;
+                pluginInfoRef[0] = existing;
+                alreadyInstalledRef[0] = true;
             } else {
                 FileInputStream fis = new FileInputStream(file);
                 byte[] data = new byte[(int) file.length()];
@@ -61,19 +61,23 @@ public class PluginInstallActivity {
                 String jsonStr = new String(data, "UTF-8");
                 org.json.JSONObject json = new org.json.JSONObject(jsonStr);
 
-                pluginInfo = new PluginManager.PluginInfo();
-                pluginInfo.id = file.getName().replace(".jello", "");
-                pluginInfo.title = json.optString("title", pluginInfo.id);
-                pluginInfo.description = json.optString("description", "");
-                pluginInfo.photoUrl = json.optString("photo", "");
-                pluginInfo.enabled = false;
-                alreadyInstalled = false;
+                PluginManager.PluginInfo pi = new PluginManager.PluginInfo();
+                pi.id = file.getName().replace(".jello", "");
+                pi.title = json.optString("title", pi.id);
+                pi.description = json.optString("description", "");
+                pi.photoUrl = json.optString("photo", "");
+                pi.enabled = false;
+                pluginInfoRef[0] = pi;
+                alreadyInstalledRef[0] = false;
             }
         } catch (Exception e) {
             FileLog.e(e);
             showErrorSheet(context, resourcesProvider);
             return;
         }
+
+        final PluginManager.PluginInfo pi = pluginInfoRef[0];
+        final boolean alreadyInstalled = alreadyInstalledRef[0];
 
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -88,15 +92,15 @@ public class PluginInstallActivity {
         titleView.setTypeface(AndroidUtilities.bold());
         titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
-        titleView.setText(pluginInfo.title);
+        titleView.setText(pi.title);
         titleView.setGravity(Gravity.CENTER);
         linearLayout.addView(titleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 0, 0, 0, 8));
 
-        if (!TextUtils.isEmpty(pluginInfo.description)) {
+        if (!TextUtils.isEmpty(pi.description)) {
             TextView descView = new TextView(context);
             descView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             descView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText, resourcesProvider));
-            descView.setText(pluginInfo.description);
+            descView.setText(pi.description);
             descView.setGravity(Gravity.CENTER);
             linearLayout.addView(descView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 0, 0, 0, 23));
         } else {
@@ -105,17 +109,17 @@ public class PluginInstallActivity {
 
         ButtonWithCounterView primaryButton = new ButtonWithCounterView(context, true, resourcesProvider);
         if (alreadyInstalled) {
-            primaryButton.setText(pluginInfo.enabled
+            primaryButton.setText(pi.enabled
                 ? getString(R.string.JellogramPluginsDisable)
                 : getString(R.string.JellogramPluginsEnable), false);
         } else {
             primaryButton.setText(getString(R.string.JellogramPluginInstall), false);
         }
         primaryButton.setOnClickListener(v -> {
-            if (alreadyInstalled) {
-                boolean newEnabled = !pluginInfo.enabled;
-                PluginManager.getInstance().setPluginEnabled(pluginInfo.id, newEnabled);
-                pluginInfo.enabled = newEnabled;
+            if (alreadyInstalledRef[0]) {
+                boolean newEnabled = !pluginInfoRef[0].enabled;
+                PluginManager.getInstance().setPluginEnabled(pluginInfoRef[0].id, newEnabled);
+                pluginInfoRef[0].enabled = newEnabled;
                 primaryButton.setText(newEnabled
                     ? getString(R.string.JellogramPluginsDisable)
                     : getString(R.string.JellogramPluginsEnable), false);
@@ -123,8 +127,8 @@ public class PluginInstallActivity {
             } else {
                 PluginManager.PluginInfo result = PluginManager.getInstance().installPlugin(filePath);
                 if (result != null) {
-                    pluginInfo = result;
-                    alreadyInstalled = true;
+                    pluginInfoRef[0] = result;
+                    alreadyInstalledRef[0] = true;
                     primaryButton.setText(getString(R.string.JellogramPluginsEnable), false);
                     NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.jellogramSettingsChanged);
                 }
