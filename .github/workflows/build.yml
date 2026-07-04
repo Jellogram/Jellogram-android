@@ -55,13 +55,13 @@ jobs:
           cp $ANDROID_HOME/build-tools/30.0.3/dx $ANDROID_HOME/build-tools/35.0.0/dx
           cp $ANDROID_HOME/build-tools/30.0.3/lib/dx.jar $ANDROID_HOME/build-tools/35.0.0/lib/dx.jar
 
-      # Кеширование Gradle
+      # Кеширование Gradle (только зависимости, без build-cache)
       - name: Cache Gradle dependencies
         uses: actions/cache@v4
         with:
           path: |
-            ~/.gradle/caches
             ~/.gradle/wrapper
+            ~/.gradle/caches/modules-2
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
@@ -88,9 +88,9 @@ jobs:
           GRADLE_OPTS: -Xmx4096m -Dorg.gradle.jvmargs=-Xmx4096m
         run: |
           if [ "${{ github.event.inputs.build_type }}" == "debug" ]; then
-            ./gradlew --stacktrace --info --warning-mode=all :TMessagesProj_App:assembleDebug
+            ./gradlew --no-build-cache --stacktrace --info --warning-mode=all :TMessagesProj_App:assembleDebug
           else
-            ./gradlew --stacktrace --info --warning-mode=all :TMessagesProj_App:assembleRelease
+            ./gradlew --no-build-cache --stacktrace --info --warning-mode=all :TMessagesProj_App:assembleRelease
           fi
 
       - name: Upload APK artifact
