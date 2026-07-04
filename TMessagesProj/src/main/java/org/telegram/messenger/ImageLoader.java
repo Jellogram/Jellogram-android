@@ -229,6 +229,7 @@ public class ImageLoader {
         private int fileSize;
         private RandomAccessFile fileOutputStream = null;
         private boolean canRetry = true;
+        private int retryCount;
         private long lastProgressTime;
         private int currentAccount;
 
@@ -259,8 +260,8 @@ public class ImageLoader {
                 URL downloadUrl = new URL(url);
                 httpConnection = downloadUrl.openConnection();
                 httpConnection.addRequestProperty("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A5297c Safari/602.1");
-                httpConnection.setConnectTimeout(5000);
-                httpConnection.setReadTimeout(5000);
+                httpConnection.setConnectTimeout(10000);
+                httpConnection.setReadTimeout(10000);
                 if (httpConnection instanceof HttpURLConnection) {
                     HttpURLConnection httpURLConnection = (HttpURLConnection) httpConnection;
                     httpURLConnection.setInstanceFollowRedirects(true);
@@ -412,8 +413,8 @@ public class ImageLoader {
                 URL downloadUrl = new URL(location.replace("athumb://", "https://"));
                 httpConnection = (HttpURLConnection) downloadUrl.openConnection();
                 //httpConnection.addRequestProperty("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A5297c Safari/602.1");
-                httpConnection.setConnectTimeout(5000);
-                httpConnection.setReadTimeout(5000);
+                httpConnection.setConnectTimeout(10000);
+                httpConnection.setReadTimeout(10000);
                 httpConnection.connect();
                 try {
                     if (httpConnection != null) {
@@ -574,8 +575,8 @@ public class ImageLoader {
                     URL downloadUrl = new URL(overrideUrl != null ? overrideUrl : location);
                     httpConnection = (HttpURLConnection) downloadUrl.openConnection();
                     httpConnection.addRequestProperty("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 10_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/10.0 Mobile/14A5297c Safari/602.1");
-                    httpConnection.setConnectTimeout(5000);
-                    httpConnection.setReadTimeout(5000);
+                    httpConnection.setConnectTimeout(10000);
+                    httpConnection.setReadTimeout(10000);
                     httpConnection.setInstanceFollowRedirects(true);
                     if (!isCancelled()) {
                         httpConnection.connect();
@@ -3856,14 +3857,16 @@ public class ImageLoader {
             }
             if (oldTask != null) {
                 if (reason == 1) {
-                    if (oldTask.canRetry) {
+                    if (oldTask.canRetry && oldTask.retryCount < 3) {
                         final HttpFileTask newTask = new HttpFileTask(oldTask.url, oldTask.tempFile, oldTask.ext, oldTask.currentAccount);
+                        newTask.retryCount = oldTask.retryCount + 1;
+                        long delay = 1000L * (1 << (newTask.retryCount - 1));
                         Runnable runnable = () -> {
                             httpFileLoadTasks.add(newTask);
                             runHttpFileLoadTasks(null, 0);
                         };
                         retryHttpsTasks.put(oldTask.url, runnable);
-                        AndroidUtilities.runOnUIThread(runnable, 1000);
+                        AndroidUtilities.runOnUIThread(runnable, delay);
                     } else {
                         httpFileLoadTasksByKeys.remove(oldTask.url);
                         NotificationCenter.getInstance(oldTask.currentAccount).postNotificationName(NotificationCenter.httpFileDidFailedLoad, oldTask.url, 0);
@@ -3875,7 +3878,7 @@ public class ImageLoader {
                     NotificationCenter.getInstance(oldTask.currentAccount).postNotificationName(NotificationCenter.httpFileDidLoad, oldTask.url, result);
                 }
             }
-            while (currentHttpFileLoadTasksCount < 2 && !httpFileLoadTasks.isEmpty()) {
+            while (currentHttpFileLoadTasksCount < 4 && !httpFileLoadTasks.isEmpty()) {
                 HttpFileTask task = httpFileLoadTasks.poll();
                 task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null, null, null);
                 currentHttpFileLoadTasksCount++;

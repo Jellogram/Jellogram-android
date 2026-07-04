@@ -269,9 +269,15 @@
     <string name="JellogramSettingsToggle">Переключатель (placeholder)</string>
     <string name="JellogramCategoryGeneral">Основные</string>
     <string name="JellogramCategoryAppearance">Оформление</string>
+    <string name="JellogramCategoryNetwork">Сеть</string>
     <string name="JellogramCategoryChats">Чаты</string>
     <string name="JellogramCategoryLinks">Ссылки</string>
     <string name="JellogramCategoryOther">Другое</string>
+    <string name="JellogramCustomDns">Custom DNS</string>
+    <string name="JellogramCustomDnsHint">Адрес DNS-сервера</string>
+    <string name="JellogramEnableIpv6">IPv6</string>
+    <string name="JellogramTcpOptimization">TCP оптимизация</string>
+    <string name="JellogramConnectionKeepalive">Keep connection alive</string>
     <string name="JellogramShowUserId">Показывать ID пользователя</string>
     <string name="JellogramShowChatId">Показывать ID чата/канала</string>
     <string name="JellogramCamera2">Использовать Camera 2 API</string>

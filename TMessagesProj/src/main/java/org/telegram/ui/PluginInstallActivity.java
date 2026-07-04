@@ -4,93 +4,54 @@ import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
+import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.PluginManager;
 import org.telegram.messenger.R;
-import org.telegram.ui.ActionBar.ActionBar;
-import org.telegram.ui.ActionBar.ActionBarMenu;
-import org.telegram.ui.ActionBar.ActionBarMenuItem;
-import org.telegram.ui.ActionBar.BaseFragment;
+import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RLottieImageView;
+import org.telegram.ui.Stars.ExplainStarsSheet;
+import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.io.File;
 import java.io.FileInputStream;
 
-public class PluginInstallActivity extends BaseFragment {
+public class PluginInstallActivity {
 
-    private String pluginFilePath;
-    private PluginManager.PluginInfo pluginInfo;
-    private ImageView photoView;
-    private TextView titleView;
-    private TextView descriptionView;
-    private boolean installed;
+    public static void showPluginInstallSheet(Context context, String filePath, Theme.ResourcesProvider resourcesProvider) {
+        if (context == null || filePath == null) return;
 
-    public PluginInstallActivity(Bundle args) {
-        super(args);
-    }
+        BottomSheet.Builder builder = new BottomSheet.Builder(context, false, resourcesProvider);
+        BottomSheet[] sheetRef = new BottomSheet[1];
 
-    @Override
-    public View createView(Context context) {
-        actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        actionBar.setAllowOverlayTitle(true);
-        actionBar.setTitle(getString(R.string.JellogramPluginInstallTitle));
-        actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
-            @Override
-            public void onItemClick(int id) {
-                if (id == -1) {
-                    finishFragment();
-                }
-            }
-        });
-
-        String filePath = getArguments().getString("file_path");
-        if (filePath == null) {
-            Intent intent = getParentActivity().getIntent();
-            if (intent != null && intent.getData() != null) {
-                filePath = intent.getData().getPath();
-            }
+        File file = new File(filePath);
+        if (!file.exists()) {
+            showErrorSheet(context, resourcesProvider);
+            return;
         }
 
-        if (filePath == null) {
-            showError(context);
-            return fragmentView;
-        }
+        PluginManager.PluginInfo pluginInfo;
+        boolean alreadyInstalled;
 
-        pluginFilePath = filePath;
         try {
-            File file = new File(filePath);
-            if (!file.exists()) {
-                showError(context);
-                return fragmentView;
-            }
-
-            PluginManager.PluginInfo info = PluginManager.getInstance().getPlugin(file.getName().replace(".jello", ""));
-            if (info != null) {
-                pluginInfo = info;
-                installed = true;
+            PluginManager.PluginInfo existing = PluginManager.getInstance().getPlugin(file.getName().replace(".jello", ""));
+            if (existing != null) {
+                pluginInfo = existing;
+                alreadyInstalled = true;
             } else {
-                // Parse the plugin file
                 FileInputStream fis = new FileInputStream(file);
                 byte[] data = new byte[(int) file.length()];
                 fis.read(data);
@@ -105,127 +66,111 @@ public class PluginInstallActivity extends BaseFragment {
                 pluginInfo.description = json.optString("description", "");
                 pluginInfo.photoUrl = json.optString("photo", "");
                 pluginInfo.enabled = false;
+                alreadyInstalled = false;
             }
         } catch (Exception e) {
             FileLog.e(e);
-            showError(context);
-            return fragmentView;
+            showErrorSheet(context, resourcesProvider);
+            return;
         }
 
-        FrameLayout contentView = new FrameLayout(context);
-        contentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
+        LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setPadding(dp(16), dp(20), dp(16), dp(8));
 
-        LinearLayout layout = new LinearLayout(context);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(dp(24), dp(24), dp(24), dp(24));
+        RLottieImageView imageView = new RLottieImageView(context);
+        imageView.setAnimation(R.raw.media_forbidden, dp(80), dp(80));
+        imageView.playAnimation();
+        linearLayout.addView(imageView, LayoutHelper.createLinear(80, 80, Gravity.CENTER, 0, 0, 0, 9));
 
-        // Photo
-        photoView = new ImageView(context);
-        photoView.setLayoutParams(new LinearLayout.LayoutParams(dp(120), dp(120)));
-        photoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        photoView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-        ((LinearLayout.LayoutParams) photoView.getLayoutParams()).gravity = Gravity.CENTER_HORIZONTAL;
-        photoView.setImageResource(android.R.drawable.ic_menu_gallery);
-
-        if (!TextUtils.isEmpty(pluginInfo.photoUrl)) {
-            try {
-                File imgFile = new File(pluginInfo.photoUrl);
-                if (imgFile.exists()) {
-                    Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                    if (bitmap != null) {
-                        photoView.setImageBitmap(bitmap);
-                    }
-                }
-            } catch (Exception e) {
-                FileLog.e(e);
-            }
-        }
-
-        layout.addView(photoView);
-        layout.addView(createSpace(context, dp(16)));
-
-        // Title
-        titleView = new TextView(context);
-        titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-        titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 22);
-        titleView.setGravity(Gravity.CENTER_HORIZONTAL);
+        TextView titleView = new TextView(context);
+        titleView.setTypeface(AndroidUtilities.bold());
+        titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+        titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
         titleView.setText(pluginInfo.title);
-        layout.addView(titleView);
-        layout.addView(createSpace(context, dp(8)));
+        titleView.setGravity(Gravity.CENTER);
+        linearLayout.addView(titleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 0, 0, 0, 8));
 
-        // Description
-        descriptionView = new TextView(context);
-        descriptionView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
-        descriptionView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-        descriptionView.setGravity(Gravity.CENTER_HORIZONTAL);
-        descriptionView.setText(pluginInfo.description);
-        layout.addView(descriptionView);
-        layout.addView(createSpace(context, dp(32)));
-
-        // Install / Open button
-        TextView installButton = new TextView(context);
-        installButton.setPadding(dp(32), dp(12), dp(32), dp(12));
-        installButton.setGravity(Gravity.CENTER);
-        installButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        installButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_addButton));
-        installButton.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(12), Theme.getColor(Theme.key_featuredStickers_addButton), Theme.getColor(Theme.key_featuredStickers_addButtonPressed)));
-        installButton.setTextColor(0xffffffff);
-
-        if (installed) {
-            boolean enabled = pluginInfo.enabled;
-            installButton.setText(enabled ? getString(R.string.JellogramPluginsDisable) : getString(R.string.JellogramPluginsEnable));
+        if (!TextUtils.isEmpty(pluginInfo.description)) {
+            TextView descView = new TextView(context);
+            descView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+            descView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText, resourcesProvider));
+            descView.setText(pluginInfo.description);
+            descView.setGravity(Gravity.CENTER);
+            linearLayout.addView(descView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 0, 0, 0, 23));
         } else {
-            installButton.setText(getString(R.string.JellogramPluginInstall));
+            linearLayout.addView(createSpace(context, dp(23)));
         }
 
-        installButton.setOnClickListener(v -> {
-            if (installed) {
+        ButtonWithCounterView primaryButton = new ButtonWithCounterView(context, true, resourcesProvider);
+        if (alreadyInstalled) {
+            primaryButton.setText(pluginInfo.enabled
+                ? getString(R.string.JellogramPluginsDisable)
+                : getString(R.string.JellogramPluginsEnable), false);
+        } else {
+            primaryButton.setText(getString(R.string.JellogramPluginInstall), false);
+        }
+        primaryButton.setOnClickListener(v -> {
+            if (alreadyInstalled) {
                 boolean newEnabled = !pluginInfo.enabled;
                 PluginManager.getInstance().setPluginEnabled(pluginInfo.id, newEnabled);
                 pluginInfo.enabled = newEnabled;
-                installButton.setText(newEnabled ? getString(R.string.JellogramPluginsDisable) : getString(R.string.JellogramPluginsEnable));
+                primaryButton.setText(newEnabled
+                    ? getString(R.string.JellogramPluginsDisable)
+                    : getString(R.string.JellogramPluginsEnable), false);
+                NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.jellogramSettingsChanged);
             } else {
-                PluginManager.PluginInfo result = PluginManager.getInstance().installPlugin(pluginFilePath);
+                PluginManager.PluginInfo result = PluginManager.getInstance().installPlugin(filePath);
                 if (result != null) {
                     pluginInfo = result;
-                    installed = true;
-                    installButton.setText(getString(R.string.JellogramPluginsEnable));
-                    installButton.setOnClickListener(null);
+                    alreadyInstalled = true;
+                    primaryButton.setText(getString(R.string.JellogramPluginsEnable), false);
+                    NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.jellogramSettingsChanged);
                 }
             }
         });
+        linearLayout.addView(primaryButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, Gravity.FILL_HORIZONTAL, 0, 0, 0, 4));
 
-        // Back button
-        TextView backButton = new TextView(context);
-        backButton.setPadding(dp(32), dp(12), dp(32), dp(12));
-        backButton.setGravity(Gravity.CENTER);
-        backButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        backButton.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-        backButton.setText(getString(R.string.Back));
-        backButton.setOnClickListener(v -> finishFragment());
+        ButtonWithCounterView closeButton = new ButtonWithCounterView(context, false, resourcesProvider);
+        closeButton.setText(getString(R.string.Close), false);
+        closeButton.setOnClickListener(v -> sheetRef[0].dismiss());
+        linearLayout.addView(closeButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, Gravity.FILL_HORIZONTAL, 0, 0, 0, 0));
 
-        layout.addView(installButton);
-        layout.addView(createSpace(context, dp(12)));
-        layout.addView(backButton);
-
-        contentView.addView(layout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER));
-        fragmentView = contentView;
-
-        return fragmentView;
+        builder.setCustomView(linearLayout);
+        sheetRef[0] = builder.create();
+        sheetRef[0].useBackgroundTopPadding = false;
+        sheetRef[0].fixNavigationBar();
+        sheetRef[0].show();
     }
 
-    private View createSpace(Context context, int height) {
+    private static View createSpace(Context context, int height) {
         View space = new View(context);
         space.setLayoutParams(new LinearLayout.LayoutParams(LayoutHelper.MATCH_PARENT, height));
         return space;
     }
 
-    private void showError(Context context) {
+    private static void showErrorSheet(Context context, Theme.ResourcesProvider resourcesProvider) {
+        BottomSheet.Builder builder = new BottomSheet.Builder(context, false, resourcesProvider);
+        LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setPadding(dp(16), dp(40), dp(16), dp(24));
+
         TextView errorView = new TextView(context);
         errorView.setText(getString(R.string.JellogramPluginNotFound));
-        errorView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
+        errorView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText, resourcesProvider));
         errorView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         errorView.setGravity(Gravity.CENTER);
-        fragmentView = errorView;
+        linearLayout.addView(errorView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER));
+
+        ButtonWithCounterView closeButton = new ButtonWithCounterView(context, false, resourcesProvider);
+        closeButton.setText(getString(R.string.Close), false);
+        closeButton.setOnClickListener(v -> { });
+        linearLayout.addView(closeButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, Gravity.FILL_HORIZONTAL, 0, 16, 0, 0));
+
+        builder.setCustomView(linearLayout);
+        BottomSheet sheet = builder.create();
+        sheet.useBackgroundTopPadding = false;
+        sheet.fixNavigationBar();
+        sheet.show();
     }
 }

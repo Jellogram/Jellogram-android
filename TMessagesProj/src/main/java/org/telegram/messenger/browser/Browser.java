@@ -765,8 +765,8 @@ public class Browser {
                 path = path.substring(1).toLowerCase();
                 if ("jg.me".equals(host) || "jg.midga3.ru".equals(host)) {
                     String fragment = uri.getFragment();
-                    if ("crash".equals(fragment)) {
-                        throw new RuntimeException("Jellogram crash from " + host + "/#crash");
+                    if ("crash".equals(fragment) || "crash".equals(path)) {
+                        throw new RuntimeException("Jellogram crash from " + host + "/" + ("crash".equals(path) ? "crash" : "#crash"));
                     }
                 }
                 if (path.equals("iv") || path.startsWith("s/")) {

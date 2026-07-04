@@ -223,6 +223,7 @@ import org.telegram.ui.Stories.LiveStoryPipOverlay;
 import org.telegram.ui.TON.TONIntroActivity;
 import org.telegram.ui.bots.BotWebViewAttachedSheet;
 import org.telegram.ui.bots.BotWebViewSheet;
+import org.telegram.ui.PluginInstallActivity;
 import org.telegram.ui.bots.WebViewRequestProps;
 import org.webrtc.voiceengine.WebRtcAudioTrack;
 
@@ -1694,7 +1695,10 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                             if (path.startsWith("file:")) {
                                                 path = path.replace("file://", "");
                                             }
-                                            if (type != null && type.startsWith("video/")) {
+                                            if (path != null && (path.toLowerCase().endsWith(".jello"))) {
+                                                PluginInstallActivity.showPluginInstallSheet(LaunchActivity.instance != null ? LaunchActivity.instance : this, path, null);
+                                                error = true;
+                                            } else if (type != null && type.startsWith("video/")) {
                                                 videoPath = path;
                                             } else if (type != null && type.startsWith("audio/ogg") && type.contains("codecs=opus") && MediaController.isOpusFile(path) == 1) {
                                                 voicePath = path;

@@ -44,6 +44,7 @@ import org.telegram.messenger.DocumentObject;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLocation;
+import org.telegram.messenger.JellogramSettings;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaDataController;
 import org.telegram.messenger.MessagesController;
@@ -1361,7 +1362,8 @@ public class ManageLinksActivity extends BaseFragment implements NotificationCen
                 Emoji.replaceEmoji(builder, titleView.getPaint().getFontMetricsInt(), false);
                 titleView.setText(builder);
             } else if (invite.link.startsWith("https://t.me/+")) {
-                titleView.setText(MessagesController.getInstance(currentAccount).linkPrefix + "/" + invite.link.substring("https://t.me/+".length()));
+                String linkPrefix = JellogramSettings.getInstance().getInviteLinkPrefix();
+                titleView.setText(linkPrefix + "/" + invite.link.substring("https://t.me/+".length()));
             } else if (invite.link.startsWith("https://t.me/joinchat/")) {
                 titleView.setText(invite.link.substring("https://t.me/joinchat/".length()));
             } else if (invite.link.startsWith("https://")) {

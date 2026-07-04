@@ -6614,7 +6614,8 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                     super.onDraw(canvas);
                 }
             };
-            backupImageView.setRoundRadius(dp(16));
+            int radiusPercent = org.telegram.messenger.JellogramSettings.getInstance().getAvatarCornerRadius();
+            backupImageView.setRoundRadius((int) (dp(16) * radiusPercent / 100f));
             addView(backupImageView, LayoutHelper.createFrame(32, 32, 0, 12, 2, 0, 0));
             setClipChildren(false);
 

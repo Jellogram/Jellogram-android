@@ -10,12 +10,20 @@ public class JellogramSettings {
     private static final String KEY_SHOW_USER_ID = "show_user_id";
     private static final String KEY_SHOW_CHAT_ID = "show_chat_id";
     private static final String KEY_CAMERA2_API = "enable_camera2_api";
-    private static final String KEY_AVATAR_CORNER_RADIUS = "avatar_corner_radius"; // 0-100
+    private static final String KEY_AVATAR_CORNER_RADIUS = "avatar_corner_radius";
     private static final String KEY_CENTER_CHAT_TITLES = "center_chat_titles";
     private static final String KEY_ENABLE_MD3 = "enable_md3";
     private static final String KEY_SHOW_BORDER = "show_border";
     private static final String KEY_HIDE_BOTTOM_TABS = "hide_bottom_tabs";
     private static final String KEY_MD3_SWITCHES = "md3_switches";
+    private static final String KEY_PLUGINS_ENABLED = "plugins_enabled";
+    private static final String KEY_LOGO_SCALE = "logo_scale";
+    private static final String KEY_INVITE_LINK_PREFIX = "invite_link_prefix";
+    private static final String KEY_PLUGIN_INSTALL_INFO = "plugin_install_info";
+    private static final String KEY_CUSTOM_DNS = "custom_dns";
+    private static final String KEY_ENABLE_IPV6 = "enable_ipv6";
+    private static final String KEY_TCP_OPTIMIZATION = "tcp_optimization";
+    private static final String KEY_CONNECTION_KEEPALIVE = "connection_keepalive";
 
     private static SharedPreferences prefs;
     private static JellogramSettings instance;
@@ -105,6 +113,54 @@ public class JellogramSettings {
 
     public void setMd3SwitchesEnabled(boolean value) {
         prefs.edit().putBoolean(KEY_MD3_SWITCHES, value).apply();
+    }
+
+    public String getInviteLinkPrefix() {
+        return prefs.getString(KEY_INVITE_LINK_PREFIX, "jg.me");
+    }
+
+    public void setInviteLinkPrefix(String value) {
+        prefs.edit().putString(KEY_INVITE_LINK_PREFIX, value).apply();
+    }
+
+    public String getPluginInstallInfo() {
+        return prefs.getString(KEY_PLUGIN_INSTALL_INFO, "");
+    }
+
+    public void setPluginInstallInfo(String value) {
+        prefs.edit().putString(KEY_PLUGIN_INSTALL_INFO, value).apply();
+    }
+
+    public String getCustomDns() {
+        return prefs.getString(KEY_CUSTOM_DNS, "");
+    }
+
+    public void setCustomDns(String value) {
+        prefs.edit().putString(KEY_CUSTOM_DNS, value).apply();
+    }
+
+    public boolean isIpv6Enabled() {
+        return prefs.getBoolean(KEY_ENABLE_IPV6, true);
+    }
+
+    public void setIpv6Enabled(boolean value) {
+        prefs.edit().putBoolean(KEY_ENABLE_IPV6, value).apply();
+    }
+
+    public boolean isTcpOptimizationEnabled() {
+        return prefs.getBoolean(KEY_TCP_OPTIMIZATION, true);
+    }
+
+    public void setTcpOptimizationEnabled(boolean value) {
+        prefs.edit().putBoolean(KEY_TCP_OPTIMIZATION, value).apply();
+    }
+
+    public boolean isConnectionKeepaliveEnabled() {
+        return prefs.getBoolean(KEY_CONNECTION_KEEPALIVE, true);
+    }
+
+    public void setConnectionKeepaliveEnabled(boolean value) {
+        prefs.edit().putBoolean(KEY_CONNECTION_KEEPALIVE, value).apply();
     }
 
     private static final String KEY_DISABLE_PREMIUM_STATUS_EFFECTS = "disable_premium_status_effects";

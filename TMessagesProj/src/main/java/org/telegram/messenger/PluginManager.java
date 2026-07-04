@@ -159,6 +159,10 @@ public class PluginManager {
         return new ArrayList<>(pluginsList);
     }
 
+    public void reload() {
+        loadPlugins();
+    }
+
     public void removePlugin(String id) {
         PluginInfo info = plugins.remove(id);
         if (info != null) {

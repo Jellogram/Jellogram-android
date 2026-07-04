@@ -137,6 +137,10 @@ public class StarsController {
         this.ton = ton;
     }
 
+    public void cancelPendingRequests() {
+        pendingBalanceCallbacks.clear();
+    }
+
     // ===== STAR BALANCE =====
 
     private long lastBalanceLoaded;
@@ -168,67 +172,86 @@ public class StarsController {
     }
 
     public TL_stars.StarsAmount getBalance(boolean withMinus, Runnable loaded, boolean force) {
-        if ((!balanceLoaded || System.currentTimeMillis() - lastBalanceLoaded > 1000 * 60) && !balanceLoading || force) {
-            balanceLoading = true;
-            TL_stars.TL_payments_getStarsStatus req = new TL_stars.TL_payments_getStarsStatus();
-            req.ton = ton;
-            req.peer = new TLRPC.TL_inputPeerSelf();
-            ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-                boolean updatedTransactions = false;
-                boolean updatedSubscriptions = false;
-                boolean updatedBalance = !balanceLoaded;
-                lastBalanceLoaded = System.currentTimeMillis();
-                if (res instanceof TL_stars.StarsStatus) {
-                    TL_stars.StarsStatus r = (TL_stars.StarsStatus) res;
-                    MessagesController.getInstance(currentAccount).putUsers(r.users, false);
-                    MessagesController.getInstance(currentAccount).putChats(r.chats, false);
-
-                    if (transactions[ALL_TRANSACTIONS].isEmpty()) {
-                        for (TL_stars.StarsTransaction t : r.history) {
-                            transactions[ALL_TRANSACTIONS].add(t);
-                            transactions[t.amount.amount > 0 ? INCOMING_TRANSACTIONS : OUTGOING_TRANSACTIONS].add(t);
-                        }
-                        for (int i = 0; i < 3; ++i) {
-                            transactionsExist[i] = !transactions[i].isEmpty() || transactionsExist[i];
-                            endReached[i] = (r.flags & 1) == 0;
-                            if (endReached[i]) {
-                                loading[i] = false;
-                            }
-                            offset[i] = endReached[i] ? null : r.next_offset;
-                        }
-                        updatedTransactions = true;
-                    }
-
-                    if (subscriptions.isEmpty()) {
-                        subscriptions.addAll(r.subscriptions);
-                        subscriptionsLoading = false;
-                        subscriptionsOffset = r.subscriptions_next_offset;
-                        subscriptionsEndReached = (r.flags & 4) == 0;
-                        updatedSubscriptions = true;
-                    }
-
-                    if (this.balance.amount != r.balance.amount) {
-                        updatedBalance = true;
-                    }
-                    this.balance = r.balance;
-                    this.minus = 0;
-                }
-                balanceLoading = false;
-                balanceLoaded = true;
-                if (updatedBalance) {
-                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starBalanceUpdated);
-                }
-                if (updatedTransactions) {
-                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starTransactionsLoaded);
-                }
-                if (updatedSubscriptions) {
-                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starSubscriptionsLoaded);
-                }
-
+        boolean expired = !balanceLoaded || System.currentTimeMillis() - lastBalanceLoaded > 1000 * 30;
+        if (force || expired && !balanceLoading) {
+            if (force && balanceLoading) {
+                // Force refresh while loading: queued callback will be stale, run it now
                 if (loaded != null) {
                     loaded.run();
                 }
-            }));
+                return balance;
+            }
+            if (balanceLoading) {
+                // Queue callback if a request is already in-flight
+                if (loaded != null) {
+                    pendingBalanceCallbacks.add(loaded);
+                }
+            } else {
+                balanceLoading = true;
+                if (loaded != null) {
+                    pendingBalanceCallbacks.add(loaded);
+                }
+                TL_stars.TL_payments_getStarsStatus req = new TL_stars.TL_payments_getStarsStatus();
+                req.ton = ton;
+                req.peer = new TLRPC.TL_inputPeerSelf();
+                ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
+                    boolean needsUpdate = false;
+                    lastBalanceLoaded = System.currentTimeMillis();
+                    if (res instanceof TL_stars.StarsStatus) {
+                        TL_stars.StarsStatus r = (TL_stars.StarsStatus) res;
+                        MessagesController.getInstance(currentAccount).putUsers(r.users, false);
+                        MessagesController.getInstance(currentAccount).putChats(r.chats, false);
+
+                        boolean balanceChanged = this.balance.amount != r.balance.amount;
+                        boolean txsEmpty = transactions[ALL_TRANSACTIONS].isEmpty();
+                        boolean subsEmpty = subscriptions.isEmpty();
+
+                        boolean txsLoaded = false;
+                        if (txsEmpty) {
+                            for (TL_stars.StarsTransaction t : r.history) {
+                                transactions[ALL_TRANSACTIONS].add(t);
+                                transactions[t.amount.amount > 0 ? INCOMING_TRANSACTIONS : OUTGOING_TRANSACTIONS].add(t);
+                            }
+                            for (int i = 0; i < 3; ++i) {
+                                transactionsExist[i] = !transactions[i].isEmpty() || transactionsExist[i];
+                                endReached[i] = (r.flags & 1) == 0;
+                                if (endReached[i]) {
+                                    loading[i] = false;
+                                }
+                                offset[i] = endReached[i] ? null : r.next_offset;
+                            }
+                            txsLoaded = true;
+                        }
+
+                        boolean subsLoaded = false;
+                        if (subsEmpty) {
+                            subscriptions.addAll(r.subscriptions);
+                            subscriptionsLoading = false;
+                            subscriptionsOffset = r.subscriptions_next_offset;
+                            subscriptionsEndReached = (r.flags & 4) == 0;
+                            subsLoaded = true;
+                        }
+
+                        if (balanceChanged || txsLoaded || subsLoaded) {
+                            this.balance = r.balance;
+                            this.minus = 0L;
+                            needsUpdate = true;
+                        }
+                    }
+                    balanceLoading = false;
+                    balanceLoaded = true;
+                    if (needsUpdate) {
+                        NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starBalanceUpdated);
+                    }
+
+                    for (int i = 0; i < pendingBalanceCallbacks.size(); i++) {
+                        pendingBalanceCallbacks.get(i).run();
+                    }
+                    pendingBalanceCallbacks.clear();
+                }));
+            }
+        } else if (loaded != null) {
+            loaded.run();
         }
         if (withMinus && minus > 0) {
             AmountUtils.Amount b = AmountUtils.Amount.ofSafe(balance);
@@ -249,24 +272,26 @@ public class StarsController {
     }
 
     public void invalidateBalance() {
-        balanceLoaded = false;
-        getBalance();
-        balanceLoaded = true;
+        if (!balanceLoading) {
+            balanceLoaded = false;
+            getBalance();
+        }
     }
 
     public void invalidateBalance(Runnable loaded) {
-        balanceLoaded = false;
-        getBalance(false, loaded, true);
-        balanceLoaded = true;
+        if (!balanceLoading) {
+            balanceLoaded = false;
+            getBalance(false, loaded, true);
+        }
     }
 
     public void updateBalance(TL_stars.StarsAmount balance) {
         if (!this.balance.equals(balance)) {
             this.balance = balance;
-            this.minus = 0;
+            this.minus = 0L;
             NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starBalanceUpdated);
-        } else if (this.minus != 0) {
-            this.minus = 0;
+        } else if (this.minus != 0L) {
+            this.minus = 0L;
             NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.starBalanceUpdated);
         }
     }

@@ -62,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
@@ -182,7 +183,13 @@ public class ConnectionsManager extends BaseController {
         }
     }
 
-    private static HashMap<String, ResolvedDomain> dnsCache = new HashMap<>();
+    private static final int DNS_CACHE_MAX_SIZE = 100;
+    private static HashMap<String, ResolvedDomain> dnsCache = new LinkedHashMap<String, ResolvedDomain>() {
+        @Override
+        protected boolean removeEldestEntry(java.util.Map.Entry<String, ResolvedDomain> eldest) {
+            return size() > DNS_CACHE_MAX_SIZE;
+        }
+    };
 
     private static int lastClassGuid = 1;
     

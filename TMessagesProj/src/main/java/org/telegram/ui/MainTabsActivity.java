@@ -734,6 +734,21 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             }
         } else if (id == NotificationCenter.contactsPermissionBadgeCheck) {
             checkContactsTabBadge();
+        } else if (id == NotificationCenter.jellogramSettingsChanged) {
+            updateNavBarVisibility();
+        }
+    }
+
+    private void updateNavBarVisibility() {
+        boolean hideNavBar = org.telegram.messenger.JellogramSettings.getInstance().isHideBottomTabs();
+        if (tabsViewWrapper != null) {
+            tabsViewWrapper.setVisibility(hideNavBar ? View.GONE : View.VISIBLE);
+        }
+        if (fadeView != null) {
+            fadeView.setVisibility(hideNavBar ? View.GONE : View.VISIBLE);
+        }
+        if (updateLayoutWrapper != null) {
+            updateLayoutWrapper.setVisibility(hideNavBar ? View.GONE : View.VISIBLE);
         }
     }
 
@@ -750,17 +765,9 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.appUpdateAvailable);
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.appUpdateLoading);
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.needSetDayNightTheme);
+        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.jellogramSettingsChanged);
 
-        // Hide bottom tabs based on JellogramSettings
-        if (tabsViewWrapper != null) {
-            tabsViewWrapper.setVisibility(org.telegram.messenger.JellogramSettings.getInstance().isHideBottomTabs() ? View.GONE : View.VISIBLE);
-        }
-        if (fadeView != null) {
-            fadeView.setVisibility(org.telegram.messenger.JellogramSettings.getInstance().isHideBottomTabs() ? View.GONE : View.VISIBLE);
-        }
-        if (updateLayoutWrapper != null) {
-            updateLayoutWrapper.setVisibility(org.telegram.messenger.JellogramSettings.getInstance().isHideBottomTabs() ? View.GONE : View.VISIBLE);
-        }
+        updateNavBarVisibility();
 
         return super.onFragmentCreate();
     }
@@ -778,6 +785,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.appUpdateAvailable);
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.appUpdateLoading);
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.needSetDayNightTheme);
+        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.jellogramSettingsChanged);
 
         super.onFragmentDestroy();
     }

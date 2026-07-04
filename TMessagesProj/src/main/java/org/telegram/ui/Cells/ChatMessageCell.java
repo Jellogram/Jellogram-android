@@ -1869,7 +1869,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         backgroundDrawable = new MessageBackgroundDrawable(this);
         avatarImage = new ImageReceiver();
         avatarImage.setAllowLoadingOnAttachedOnly(true);
-        avatarImage.setRoundRadius(dp(21));
+        avatarImage.setRoundRadius(getJellogramAvatarRadiusChat());
         avatarDrawable = new AvatarDrawable();
         replyImageReceiver = new ImageReceiver(this);
         replyImageReceiver.setAllowLoadingOnAttachedOnly(true);
@@ -28832,5 +28832,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             }
         }
         return text;
+    }
+
+    private int getJellogramAvatarRadiusChat() {
+        int radiusPercent = org.telegram.messenger.JellogramSettings.getInstance().getAvatarCornerRadius();
+        return (int) (dp(21) * radiusPercent / 100f);
     }
 }

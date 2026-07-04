@@ -1914,7 +1914,7 @@ public class AndroidUtilities {
                 //igonre
             }
         }
-        if (pathString.endsWith(".attheme")) {
+        if (pathString.endsWith(".attheme") || pathString.endsWith(".jello")) {
             return false;
         }
         return pathString != null && pathString.toLowerCase().contains("/data/data/" + ApplicationLoader.applicationContext.getPackageName());

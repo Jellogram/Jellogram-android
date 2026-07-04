@@ -1537,6 +1537,14 @@ public class MessagesController extends BaseController implements NotificationCe
         maxEditTime = mainPreferences.getInt("maxEditTime", 3600);
         ratingDecay = mainPreferences.getInt("ratingDecay", 2419200);
         linkPrefix = mainPreferences.getString("linkPrefix", "t.me");
+        try {
+            String jgLinkPrefix = JellogramSettings.getInstance().getInviteLinkPrefix();
+            if (jgLinkPrefix != null && jgLinkPrefix.length() > 0) {
+                linkPrefix = jgLinkPrefix;
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
         callReceiveTimeout = mainPreferences.getInt("callReceiveTimeout", 20000);
         callRingTimeout = mainPreferences.getInt("callRingTimeout", 90000);
         callConnectTimeout = mainPreferences.getInt("callConnectTimeout", 30000);
@@ -1579,6 +1587,9 @@ public class MessagesController extends BaseController implements NotificationCe
         autoarchiveAvailable = mainPreferences.getBoolean("autoarchiveAvailable", false);
         groupCallVideoMaxParticipants = mainPreferences.getInt("groipCallVideoMaxParticipants", 30);
         chatReadMarkSizeThreshold = mainPreferences.getInt("chatReadMarkSizeThreshold", 100);
+        chatReadMarkExpirePeriod = mainPreferences.getInt("chatReadMarkExpirePeriod", 7 * 86400);
+        ringtoneDurationMax = mainPreferences.getInt("ringtoneDurationMax", 5);
+        ringtoneSizeMax = mainPreferences.getInnces.getInt("chatReadMarkSizeThreshold", 100);
         chatReadMarkExpirePeriod = mainPreferences.getInt("chatReadMarkExpirePeriod", 7 * 86400);
         ringtoneDurationMax = mainPreferences.getInt("ringtoneDurationMax", 5);
         ringtoneSizeMax = mainPreferences.getInt("ringtoneSizeMax", 1024_00);
@@ -5696,6 +5707,14 @@ public class MessagesController extends BaseController implements NotificationCe
                 linkPrefix = linkPrefix.substring(8);
             } else if (linkPrefix.startsWith("http://")) {
                 linkPrefix = linkPrefix.substring(7);
+            }
+            try {
+                String jgLinkPrefix = JellogramSettings.getInstance().getInviteLinkPrefix();
+                if (jgLinkPrefix != null && jgLinkPrefix.length() > 0) {
+                    linkPrefix = jgLinkPrefix;
+                }
+            } catch (Exception e) {
+                FileLog.e(e);
             }
             callReceiveTimeout = config.call_receive_timeout_ms;
             callRingTimeout = config.call_ring_timeout_ms;
