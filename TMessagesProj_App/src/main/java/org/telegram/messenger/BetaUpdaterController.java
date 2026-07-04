@@ -93,19 +93,7 @@ public class BetaUpdaterController {
     private final static long CHECK_INTERVAL_PRIVATE = 1000 * 60 * 4; // 5 minutes
 
     private boolean isUpdatesEnabled() {
-        try {
-            InputStream is = ApplicationLoader.applicationContext.getAssets().open("config.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            String jsonStr = new String(buffer, "UTF-8");
-            JSONObject json = new JSONObject(jsonStr);
-            return json.optBoolean("updates", true);
-        } catch (Exception e) {
-            FileLog.e("Failed to read config.json", e);
-            return true;
-        }
+        return JellogramSettings.getInstance().isUpdatesEnabled();
     }
 
     private boolean firstCheck = true;

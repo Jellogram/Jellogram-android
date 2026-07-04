@@ -3,6 +3,10 @@ package org.telegram.messenger;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import org.json.JSONObject;
+
+import java.io.InputStream;
+
 public class JellogramSettings {
 
     private static final String PREFS_NAME = "jellogram_settings";
@@ -24,6 +28,9 @@ public class JellogramSettings {
     private static final String KEY_ENABLE_IPV6 = "enable_ipv6";
     private static final String KEY_TCP_OPTIMIZATION = "tcp_optimization";
     private static final String KEY_CONNECTION_KEEPALIVE = "connection_keepalive";
+    private static final String KEY_UPDATES_ENABLED = "updates_enabled";
+
+    private static Boolean updatesEnabledDefault;
 
     private static SharedPreferences prefs;
     private static JellogramSettings instance;
@@ -171,6 +178,31 @@ public class JellogramSettings {
 
     public void setDisablePremiumStatusEffects(boolean value) {
         prefs.edit().putBoolean(KEY_DISABLE_PREMIUM_STATUS_EFFECTS, value).apply();
+    }
+
+    public boolean isUpdatesEnabled() {
+        if (prefs.contains(KEY_UPDATES_ENABLED)) {
+            return prefs.getBoolean(KEY_UPDATES_ENABLED, true);
+        }
+        if (updatesEnabledDefault == null) {
+            try {
+                InputStream is = ApplicationLoader.applicationContext.getAssets().open("config.json");
+                int size = is.available();
+                byte[] buffer = new byte[size];
+                is.read(buffer);
+                is.close();
+                String jsonStr = new String(buffer, "UTF-8");
+                JSONObject json = new JSONObject(jsonStr);
+                updatesEnabledDefault = json.optBoolean("updates", true);
+            } catch (Exception e) {
+                updatesEnabledDefault = true;
+            }
+        }
+        return updatesEnabledDefault;
+    }
+
+    public void setUpdatesEnabled(boolean value) {
+        prefs.edit().putBoolean(KEY_UPDATES_ENABLED, value).apply();
     }
 
     public static boolean isCrashDialogShown() {

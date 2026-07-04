@@ -1862,6 +1862,15 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     }
 
                     if (data != null) {
+                        String jelloPath = AndroidUtilities.getPath(data);
+                        if (jelloPath == null) {
+                            jelloPath = data.getPath();
+                        }
+                        if (jelloPath != null && jelloPath.toLowerCase().endsWith(".jello")) {
+                            PluginInstallActivity.showPluginInstallSheet(this, jelloPath, null);
+                            return true;
+                        }
+
                         String username = null;
                         String referrer = null;
                         String login = null;
@@ -1944,8 +1953,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                         }
                                         if (host.equals("jg.me") || host.equals("jg.midga3.ru") || isJgPrefix || isJgMidga3Prefix) {
                                             String fragment = data.getFragment();
-                                            if (fragment != null && fragment.equals("crash")) {
-                                                throw new RuntimeException("Jellogram crash from " + host + "/#crash");
+                                            String crashPath = data.getPath();
+                                            if ((fragment != null && fragment.equals("crash")) || (crashPath != null && crashPath.equals("/crash"))) {
+                                                throw new RuntimeException("Jellogram crash from " + host + crashPath);
                                             }
                                         }
                                         String path = data.getPath();

@@ -10376,7 +10376,7 @@ list of reactions.</string>
     <string name="JellogramShowChatId">Показывать ID чата/канала</string>
     <string name="JellogramCamera2">Использовать Camera 2 API</string>
     <string name="JellogramAvatarRadius">Скругление аватарок</string>
-    <string name="JellogramHideBottomTabs">Hide nav bar</string>
+    <string name="JellogramHideBottomTabs">Hide bottom tabs</string>
     <string name="JellogramMd3Switches">Material Design 3 switches</string>
     <string name="JellogramDisablePremiumStatusEffects">Disable premium badge and status effects</string>
     <string name="JellogramShowBorder">Границы чатов</string>
@@ -10690,7 +10690,7 @@ list of reactions.</string>
     <string name="AddAccount">Add Account</string>
     <string name="SwitchAccountHint">Switch account</string>
     <string name="SelectAccount">Select account</string>
-    <string name="JellogramMd3">Material Design 3 switches</string>
+    <string name="JellogramMd3">Material Design 3</string>
     <string name="JellogramCenterTitles">Center chat titles</string>
     <string name="JellogramFaqLink">FAQ</string>
     <string name="JellogramTosLink">Terms</string>
@@ -10709,4 +10709,6 @@ list of reactions.</string>
     <string name="JellogramPluginsEnable">Enable</string>
     <string name="JellogramPluginsDisable">Disable</string>
     <!-- Jellogram Header -->
+    <string name="JellogramCategoryUpdates">Updates</string>
+    <string name="JellogramUpdatesEnabled">Auto check updates</string>
 </resources>

@@ -286,6 +286,8 @@
     <string name="JellogramMd3Switches">Material Design 3 switches</string>
     <string name="JellogramDisablePremiumStatusEffects">Disable premium badge and status effects</string>
     <string name="JellogramShowBorder">Границы чатов</string>
+    <string name="JellogramCenterTitles">Центрировать названия чатов</string>
+    <string name="JellogramMd3">Material Design 3</string>
     <string name="JellogramChannelLink">Канал</string>
     <string name="JellogramChatLink">Чат</string>
     <string name="JellogramTranslateLink">Перевод</string>
@@ -306,4 +308,6 @@
     <string name="JellogramCrashDesc">Принудительный краш с логами</string>
     <string name="JellogramHeaderSettings">Настройки</string>
     <string name="JellogramHeaderProfile">Профиль</string>
+    <string name="JellogramCategoryUpdates">Обновления</string>
+    <string name="JellogramUpdatesEnabled">Проверять обновления</string>
 </resources>

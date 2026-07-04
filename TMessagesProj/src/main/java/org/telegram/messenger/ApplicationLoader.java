@@ -358,6 +358,7 @@ public class ApplicationLoader extends Application {
 
         LauncherIconController.tryFixLauncherIconIfNeeded();
         ProxyRotationController.init();
+        me.sasha.jellogram.Jellogram.init();
     }
 
     public static void startPushService() {

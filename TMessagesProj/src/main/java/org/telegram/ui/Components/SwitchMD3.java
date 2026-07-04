@@ -30,6 +30,7 @@ public class SwitchMD3 extends View implements FactorAnimator.Target {
     private float progress;
     private Paint paintTrack;
     private Paint paintThumb;
+    private Paint paintShadow;
     private Path thumbPath;
 
     private int trackColorKey = Theme.key_md3SwitchTrack;
@@ -49,6 +50,9 @@ public class SwitchMD3 extends View implements FactorAnimator.Target {
         this.resourcesProvider = resourcesProvider;
         paintTrack = new Paint(Paint.ANTI_ALIAS_FLAG);
         paintThumb = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paintShadow = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paintShadow.setShadowLayer(AndroidUtilities.dp(2), 0, AndroidUtilities.dp(1), 0x40000000);
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         thumbPath = new Path();
     }
 
@@ -90,9 +94,9 @@ public class SwitchMD3 extends View implements FactorAnimator.Target {
 
         if (width == 0 || height == 0) return;
 
-        int trackWidth = AndroidUtilities.dp(32);
-        int trackHeight = AndroidUtilities.dp(16);
-        int thumbRadius = AndroidUtilities.dp(10);
+        int trackWidth = AndroidUtilities.dp(40);
+        int trackHeight = AndroidUtilities.dp(22);
+        int thumbRadius = AndroidUtilities.dp(9);
 
         float cx = width / 2f;
         float cy = height / 2f;
@@ -106,10 +110,14 @@ public class SwitchMD3 extends View implements FactorAnimator.Target {
             paintTrack
         );
 
-        // Thumb position
-        float thumbX = isChecked ? cx + trackWidth / 2f - thumbRadius - AndroidUtilities.dp(3) :
-            cx - trackWidth / 2f + thumbRadius + AndroidUtilities.dp(3);
+        // Thumb position (interpolated using progress)
+        float leftX = cx - trackWidth / 2f + thumbRadius + AndroidUtilities.dp(3);
+        float rightX = cx + trackWidth / 2f - thumbRadius - AndroidUtilities.dp(3);
+        float thumbX = leftX + (rightX - leftX) * progress;
         float thumbY = cy;
+
+        // Thumb shadow
+        canvas.drawCircle(thumbX, thumbY + AndroidUtilities.dp(1), thumbRadius, paintShadow);
 
         // Thumb
         paintThumb.setColor(getThumbColor());

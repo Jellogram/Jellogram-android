@@ -6,6 +6,8 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.ViewOutlineProvider;
+import android.widget.ScrollView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -73,10 +75,11 @@ public class JellogramSettingsActivity extends BaseFragment {
     private static final int ITEM_HIDE_BOTTOM_TABS = 8;
     private static final int ITEM_MD3_SWITCHES = 9;
     private static final int ITEM_DISABLE_PREMIUM_EFFECTS = 10;
-    private static final int ITEM_CUSTOM_DNS = 11;
-    private static final int ITEM_ENABLE_IPV6 = 12;
-    private static final int ITEM_TCP_OPTIMIZATION = 13;
-    private static final int ITEM_CONNECTION_KEEPALIVE = 14;
+    private static final int ITEM_UPDATES_ENABLED = 11;
+    private static final int ITEM_CUSTOM_DNS = 12;
+    private static final int ITEM_ENABLE_IPV6 = 13;
+    private static final int ITEM_TCP_OPTIMIZATION = 14;
+    private static final int ITEM_CONNECTION_KEEPALIVE = 15;
     private static final int ITEM_PLUGIN_START = 1000;
 
     private static final int TYPE_HEADER = 0;
@@ -89,6 +92,7 @@ public class JellogramSettingsActivity extends BaseFragment {
 
     private void notifySettingsChanged() {
         NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.jellogramSettingsChanged);
+        NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.updateInterfaces);
     }
 
     @Override
@@ -142,14 +146,17 @@ public class JellogramSettingsActivity extends BaseFragment {
     }
 
     private void buildMainMenu(Context context) {
+        ScrollView scrollView = new ScrollView(context);
+        scrollView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+        ((FrameLayout) fragmentView).addView(scrollView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP));
+
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
-        linearLayout.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-        ((FrameLayout) fragmentView).addView(linearLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP));
 
         ImageView logoView = new ImageView(context);
         logoView.setImageResource(R.drawable.jellogram_intro_logo);
         logoView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        applyCornerRadius(logoView);
         linearLayout.addView(logoView, LayoutHelper.createLinear(80, 80, Gravity.CENTER_HORIZONTAL, 0, 24, 0, 0));
 
         TextView titleView = new TextView(context);
@@ -177,6 +184,33 @@ public class JellogramSettingsActivity extends BaseFragment {
             null, CATEGORY_OTHER);
         addCategoryButton(linearLayout, context, R.drawable.settings_features, LocaleController.getString(R.string.JellogramPlugins),
             null, CATEGORY_PLUGINS);
+
+        scrollView.addView(linearLayout, LayoutHelper.createScroll(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP));
+    }
+
+    private void applyCornerRadius(ImageView imageView) {
+        int radiusPercent = settings.getAvatarCornerRadius();
+        if (radiusPercent <= 0) {
+            imageView.setOutlineProvider(null);
+            imageView.setClipToOutline(false);
+            return;
+        }
+        float radius = dp(40) * radiusPercent / 100f;
+        imageView.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
+        imageView.setClipToOutline(false);
+        imageView.post(() -> {
+            android.graphics.drawable.GradientDrawable drawable = new android.graphics.drawable.GradientDrawable();
+            drawable.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
+            drawable.setCornerRadius(radius);
+            drawable.setColor(android.graphics.Color.TRANSPARENT);
+            imageView.setOutlineProvider(new ViewOutlineProvider() {
+                @Override
+                public void getOutline(View view, android.graphics.Outline outline) {
+                    outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), radius);
+                }
+            });
+            imageView.setClipToOutline(true);
+        });
     }
 
     private void addCategoryButton(LinearLayout parent, Context context, int icon, String title, String subtitle, int category) {
@@ -325,11 +359,21 @@ public class JellogramSettingsActivity extends BaseFragment {
                         notifySettingsChanged();
                         break;
                     }
+                    case ITEM_UPDATES_ENABLED: {
+                        boolean v = !settings.isUpdatesEnabled();
+                        settings.setUpdatesEnabled(v);
+                        ((SwitchCell) view).setChecked(v);
+                        notifySettingsChanged();
+                        break;
+                    }
                     default:
                         if (item.id >= ITEM_PLUGIN_START) {
                             handlePluginToggle(item.id, view);
                         }
                         break;
+                }
+                if (adapter != null) {
+                    adapter.notifyDataSetChanged();
                 }
             } else if (item.type == TYPE_LINK_BUTTON) {
                 switch (item.id) {
@@ -371,6 +415,8 @@ public class JellogramSettingsActivity extends BaseFragment {
                 items.add(new Item(TYPE_SWITCH, ITEM_HIDE_BOTTOM_TABS, LocaleController.getString(R.string.JellogramHideBottomTabs)));
                 items.add(new Item(TYPE_SWITCH, ITEM_CAMERA2_API, LocaleController.getString(R.string.JellogramCamera2)));
                 items.add(new Item(TYPE_SWITCH, ITEM_DISABLE_PREMIUM_EFFECTS, LocaleController.getString(R.string.JellogramDisablePremiumStatusEffects)));
+                items.add(new Item(TYPE_HEADER, 0, LocaleController.getString(R.string.JellogramCategoryUpdates)));
+                items.add(new Item(TYPE_SWITCH, ITEM_UPDATES_ENABLED, LocaleController.getString(R.string.JellogramUpdatesEnabled)));
                 break;
 
             case CATEGORY_APPEARANCE:
@@ -539,6 +585,7 @@ public class JellogramSettingsActivity extends BaseFragment {
                     case ITEM_ENABLE_IPV6: checked = settings.isIpv6Enabled(); break;
                     case ITEM_TCP_OPTIMIZATION: checked = settings.isTcpOptimizationEnabled(); break;
                     case ITEM_CONNECTION_KEEPALIVE: checked = settings.isConnectionKeepaliveEnabled(); break;
+                    case ITEM_UPDATES_ENABLED: checked = settings.isUpdatesEnabled(); break;
                     default:
                         if (item.id == -1) {
                             showToggle = false;
