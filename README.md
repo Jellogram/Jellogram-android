@@ -223,4 +223,4 @@ keytool -list -v -keystore TMessagesProj/config/testgram-release.jks -alias your
 
 ## Server
 
-See [testgram](https://github.com/glebxdlolreal/testgram) for server setup.
+Done by multiple forks of MyTelegram
