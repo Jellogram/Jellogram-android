@@ -58,8 +58,8 @@ dependencies {
 
 //    implementation 'com.google.mlkit:translate:17.0.3'
 
-    // Lua plugin system
-    implementation 'org.luaj:luaj-jse:3.0.2'
+    // Lua plugin system - using 3.0.1 which is available on Maven Central
+    implementation 'org.luaj:luaj-jse:3.0.1'
 
     constraints {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
