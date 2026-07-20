@@ -5421,7 +5421,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         bannerImageView = new ImageView(context);
         bannerImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         bannerImageView.setVisibility(View.GONE);
-        avatarContainer2.addView(bannerImageView, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL));
+        int bannerHeight = (int) (AndroidUtilities.displaySize.x * 9.0 / 16.0);
+        avatarContainer2.addView(bannerImageView, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, bannerHeight, Gravity.TOP | Gravity.CENTER_HORIZONTAL));
         avatarContainer2.addView(avatarsViewPager);
         avatarContainer2.addView(avatarsBlurView, LayoutHelper.createFrame(-1, 74 + 64));
         avatarContainer2.addView(overlaysView);
@@ -12754,21 +12755,48 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         }
     }
 
+    private AlertDialog bannerProgressDialog;
+
     private void pickBannerImage() {
+        if (getParentActivity() == null) return;
         try {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
-            startActivityForResult(intent, 104);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            startActivityForResult(Intent.createChooser(intent, LocaleController.getString(R.string.SetBanner)), 104);
         } catch (Exception e) {
             FileLog.e(e);
         }
     }
 
+    private void showBannerLoading(boolean show) {
+        if (getParentActivity() == null) return;
+        AndroidUtilities.runOnUIThread(() -> {
+            try {
+                if (show) {
+                    if (bannerProgressDialog == null) {
+                        bannerProgressDialog = new AlertDialog(getParentActivity(), AlertDialog.ALERT_TYPE_SPINNER);
+                        bannerProgressDialog.setCanCancel(false);
+                    }
+                    bannerProgressDialog.show();
+                } else {
+                    if (bannerProgressDialog != null) {
+                        bannerProgressDialog.dismiss();
+                    }
+                }
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        });
+    }
+
     private void removeBanner() {
+        showBannerLoading(true);
         ProfileBannerHelper.deleteBanner(userId, new ProfileBannerHelper.BannerCallback() {
             @Override
             public void onSuccess(String url) {
                 AndroidUtilities.runOnUIThread(() -> {
+                    showBannerLoading(false);
                     bannerUrl = null;
                     if (bannerImageView != null) {
                         bannerImageView.setVisibility(View.GONE);
@@ -12782,13 +12810,15 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
             @Override
             public void onError(String error) {
-                FileLog.e("Banner delete error: " + error);
+                AndroidUtilities.runOnUIThread(() -> {
+                    showBannerLoading(false);
+                    FileLog.e("Banner delete error: " + error);
+                });
             }
         });
     }
 
     private void loadBanner(long uid) {
-        if (uid != getUserConfig().getClientUserId()) return;
         ProfileBannerHelper.downloadBanner(uid, new ProfileBannerHelper.BannerBitmapCallback() {
             @Override
             public void onSuccess(Bitmap bitmap) {
@@ -12820,7 +12850,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
     @Override
     public void onActivityResultFragment(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 104 && resultCode == Activity.RESULT_OK && data != null) {
+        if (requestCode == 104 && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
             onBannerPicked(data.getData());
             return;
         }
@@ -12844,19 +12874,33 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     }
 
     private void onBannerPicked(Uri uri) {
+        if (getParentActivity() == null) return;
+        showBannerLoading(true);
         try {
             InputStream is = getParentActivity().getContentResolver().openInputStream(uri);
-            Bitmap bitmap = BitmapFactory.decodeStream(is);
-            if (is != null) is.close();
-            if (bitmap == null) return;
+            if (is == null) {
+                showBannerLoading(false);
+                return;
+            }
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inSampleSize = 2;
+            opts.inPreferredConfig = Bitmap.Config.RGB_565;
+            Bitmap bitmap = BitmapFactory.decodeStream(is, null, opts);
+            is.close();
+            if (bitmap == null) {
+                showBannerLoading(false);
+                return;
+            }
+            final Bitmap finalBitmap = bitmap;
             ProfileBannerHelper.uploadBanner(userId, bitmap, new ProfileBannerHelper.BannerCallback() {
                 @Override
                 public void onSuccess(String url) {
                     AndroidUtilities.runOnUIThread(() -> {
+                        showBannerLoading(false);
                         bannerUrl = url;
                         if (bannerImageView != null) {
                             bannerImageView.setVisibility(View.VISIBLE);
-                            bannerImageView.setImageBitmap(bitmap);
+                            bannerImageView.setImageBitmap(finalBitmap);
                         }
                         if (otherItem != null) {
                             otherItem.showSubItem(remove_banner);
@@ -12866,10 +12910,14 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
                 @Override
                 public void onError(String error) {
-                    FileLog.e("Banner upload error: " + error);
+                    AndroidUtilities.runOnUIThread(() -> {
+                        showBannerLoading(false);
+                        FileLog.e("Banner upload error: " + error);
+                    });
                 }
             });
         } catch (Exception e) {
+            showBannerLoading(false);
             FileLog.e(e);
         }
     }

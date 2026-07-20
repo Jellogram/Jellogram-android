@@ -64,7 +64,7 @@ public class ProfileBannerHelper {
     public static void downloadBanner(final long userId, final BannerBitmapCallback callback) {
         new Thread(() -> {
             try {
-                URL url = new URL(BANNER_SERVER + "/api/banner/" + userId);
+                URL url = new URL(BANNER_SERVER + "/api/banner/?user_id=" + userId);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setConnectTimeout(10000);
                 conn.setReadTimeout(10000);
@@ -86,7 +86,7 @@ public class ProfileBannerHelper {
     public static void deleteBanner(final long userId, final BannerCallback callback) {
         new Thread(() -> {
             try {
-                URL url = new URL(BANNER_SERVER + "/api/banner/" + userId);
+                URL url = new URL(BANNER_SERVER + "/api/banner/?user_id=" + userId);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("DELETE");
                 conn.setConnectTimeout(10000);
