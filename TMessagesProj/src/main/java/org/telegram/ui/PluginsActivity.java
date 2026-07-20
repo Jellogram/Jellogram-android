@@ -12,6 +12,7 @@ import org.telegram.messenger.lua.PluginManager;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.Cells.PluginCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Components.LayoutHelper;
@@ -83,8 +84,8 @@ public class PluginsActivity extends BaseFragment {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onFragmentDestroy() {
+        super.onFragmentDestroy();
         if (pluginManager != null) {
             pluginManager.shutdown();
         }
