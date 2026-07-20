@@ -29,12 +29,15 @@ public class LuaPlugin {
      * Load the Lua script and setup API
      */
     public void init() throws IOException {
+        if (globals == null) {
+            return;
+        }
         if (!scriptFile.exists()) {
             throw new IOException("Plugin script not found: " + scriptFile.getAbsolutePath());
         }
 
         String scriptContent = new String(Files.readAllBytes(scriptFile.toPath()));
-        
+
         // Setup plugin API
         api = new LuaPluginAPI();
         globals.set("PluginAPI", api.asLuaValue());

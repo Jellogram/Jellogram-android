@@ -11,6 +11,7 @@ import org.telegram.messenger.lua.LuaPlugin;
 import org.telegram.messenger.lua.PluginManager;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BaseFragment;
+import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Components.LayoutHelper;
@@ -132,6 +133,11 @@ public class PluginsActivity extends BaseFragment {
         @Override
         public int getItemViewType(int position) {
             return position == 0 ? 0 : 1;
+        }
+
+        @Override
+        public boolean isEnabled(RecyclerView.ViewHolder holder) {
+            return false;
         }
     }
 }
