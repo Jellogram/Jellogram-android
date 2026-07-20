@@ -216,7 +216,7 @@ public class JellogramSettingsActivity extends BaseFragment {
     private void addCategoryButton(LinearLayout parent, Context context, int icon, String title, String subtitle, int category) {
         FrameLayout button = new FrameLayout(context);
         button.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-        button.setPadding(dp(21), dp(12), dp(21), dp(12));
+        button.setPadding(dp(21), dp(8), dp(21), dp(8));
         button.setBackground(Theme.createSimpleSelectorRoundRectDrawable(0, Theme.getColor(Theme.key_windowBackgroundWhite), Theme.getColor(Theme.key_actionBarActionModeDefaultSelector)));
         button.setOnClickListener(v -> presentFragment(new JellogramSettingsActivity(category)));
 
@@ -252,7 +252,7 @@ public class JellogramSettingsActivity extends BaseFragment {
         divider.setBackgroundColor(Theme.getColor(Theme.key_divider));
         button.addView(divider, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 1, Gravity.BOTTOM));
 
-        parent.addView(button, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, dp(64)));
+        parent.addView(button, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, dp(52)));
     }
 
     private void buildCategoryList(Context context) {

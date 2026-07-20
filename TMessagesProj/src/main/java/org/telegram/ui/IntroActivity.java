@@ -93,7 +93,7 @@ import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL10;
 
 public class IntroActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
-    private final static int ICON_WIDTH_DP = 200, ICON_HEIGHT_DP = 150;
+    private final static int ICON_WIDTH_DP = 240, ICON_HEIGHT_DP = 200;
 
     private final Object pagerHeaderTag = new Object(),
             pagerMessageTag = new Object();
@@ -248,47 +248,22 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
         ImageView logoImageView = new ImageView(context);
         logoImageView.setImageResource(R.drawable.jellogram_intro_logo);
         logoImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        frameLayout2.addView(logoImageView, LayoutHelper.createFrame(ICON_WIDTH_DP, ICON_HEIGHT_DP, Gravity.CENTER));
+        frameLayout2.addView(logoImageView, LayoutHelper.createFrame(ICON_WIDTH_DP, ICON_HEIGHT_DP, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 20, 0, 0));
+
+        TextView welcomeView = new TextView(context);
+        welcomeView.setText(LocaleController.getString(R.string.Page1Message));
+        welcomeView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+        welcomeView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
+        welcomeView.setGravity(Gravity.CENTER_HORIZONTAL);
+        welcomeView.setLineSpacing(AndroidUtilities.dp(4), 1.0f);
+        frameLayout2.addView(welcomeView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 16, ICON_HEIGHT_DP + 30, 16, 0));
 
         viewPager = new ViewPager(context);
         viewPager.setAdapter(new IntroAdapter());
         viewPager.setPageMargin(0);
         viewPager.setOffscreenPageLimit(1);
         frameContainerView.addView(viewPager, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                bottomPages.setPageOffset(position, positionOffset);
-
-                float width = viewPager.getMeasuredWidth();
-                if (width == 0) {
-                    return;
-                }
-                float offset = (position * width + positionOffsetPixels - currentViewPagerPage * width) / width;
-                Intro.setScrollOffset(offset);
-            }
-
-            @Override
-            public void onPageSelected(int i) {
-                currentViewPagerPage = i;
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int i) {
-                if (i == ViewPager.SCROLL_STATE_DRAGGING) {
-                    dragging = true;
-                    startDragX = viewPager.getCurrentItem() * viewPager.getMeasuredWidth();
-                } else if (i == ViewPager.SCROLL_STATE_IDLE || i == ViewPager.SCROLL_STATE_SETTLING) {
-                    if (dragging) {
-                        justEndDragging = true;
-                        dragging = false;
-                    }
-                    if (lastPage != viewPager.getCurrentItem()) {
-                        lastPage = viewPager.getCurrentItem();
-                    }
-                }
-            }
-        });
+        viewPager.setVisibility(View.GONE);
 
         startMessagingButtonBackground = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, null);
         startMessagingButton = new TextView(context) {
@@ -348,6 +323,7 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
 
         bottomPages = new BottomPagesView(context, viewPager, 6);
         frameContainerView.addView(bottomPages, LayoutHelper.createFrame(66, 5, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, ICON_HEIGHT_DP + 200, 0, 0));
+        bottomPages.setVisibility(View.GONE);
 
         switchLanguageTextView = new TextView(context);
         switchLanguageTextView.setGravity(Gravity.CENTER);
