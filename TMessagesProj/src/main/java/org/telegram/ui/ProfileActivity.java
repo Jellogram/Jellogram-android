@@ -41,6 +41,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -139,6 +140,7 @@ import org.telegram.messenger.DocumentObject;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
+import org.telegram.messenger.ProfileBannerHelper;
 import org.telegram.messenger.FlagSecureReason;
 import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.ImageLocation;
@@ -315,6 +317,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
@@ -399,6 +402,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private PagerIndicatorView avatarsViewPagerIndicatorView;
     private AvatarDrawable avatarDrawable;
     private ImageUpdater imageUpdater;
+    private ImageView bannerImageView;
+    private String bannerUrl;
     private int avatarColor;
     TimerDrawable autoDeleteItemDrawable;
     private ProfileGooeyView avatarGooey;
@@ -584,6 +589,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private final static int edit_avatar = 34;
     private final static int delete_avatar = 35;
     private final static int add_photo = 36;
+    private final static int set_banner = 48;
+    private final static int remove_banner = 49;
     private final static int gift_premium = 38;
     private final static int channel_stories = 39;
     private final static int edit_color = 40;
@@ -2134,6 +2141,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 getMediaDataController().checkFeaturedStickers();
                 getMessagesController().loadSuggestedFilters();
                 getMessagesController().loadUserInfo(getUserConfig().getCurrentUser(), true, classGuid);
+                loadBanner(userId);
             }
             actionBarAnimationColorFrom = arguments.getInt("actionBarColor", 0);
         } else if (chatId != 0) {
@@ -2950,6 +2958,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     if (button != null) {
                         button.setTextColor(getThemedColor(Theme.key_text_RedBold));
                     }
+                } else if (id == set_banner) {
+                    pickBannerImage();
+                } else if (id == remove_banner) {
+                    removeBanner();
                 } else if (id == add_photo) {
                     onWriteButtonClick();
                 }
@@ -5406,6 +5418,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         if (!isTopic) {
             avatarsViewPager.setChatInfo(chatInfo);
         }
+        bannerImageView = new ImageView(context);
+        bannerImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        bannerImageView.setVisibility(View.GONE);
+        avatarContainer2.addView(bannerImageView, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL));
         avatarContainer2.addView(avatarsViewPager);
         avatarContainer2.addView(avatarsBlurView, LayoutHelper.createFrame(-1, 74 + 64));
         avatarContainer2.addView(overlaysView);
@@ -12118,6 +12134,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             otherItem.addSubItem(gallery_menu_save, R.drawable.msg_gallery, LocaleController.getString(R.string.SaveToGallery));
             //otherItem.addSubItem(edit_avatar, R.drawable.photo_paint, LocaleController.getString(R.string.EditPhoto));
             otherItem.addSubItem(delete_avatar, R.drawable.msg_delete, LocaleController.getString(R.string.Delete));
+            otherItem.addSubItem(set_banner, R.drawable.msg_edit, LocaleController.getString(R.string.SetBanner));
+            otherItem.addSubItem(remove_banner, R.drawable.msg_delete, LocaleController.getString(R.string.RemoveBanner));
         } else {
             otherItem.addSubItem(gallery_menu_save, R.drawable.msg_gallery, LocaleController.getString(R.string.SaveToGallery));
         }
@@ -12134,6 +12152,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             otherItem.showSubItem(add_photo);
             otherItem.hideSubItem(edit_avatar);
             otherItem.hideSubItem(delete_avatar);
+            if (bannerUrl == null) {
+                otherItem.hideSubItem(remove_banner);
+            }
         }
 
         isCallAvailable = callItemVisible;
@@ -12733,8 +12754,76 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         }
     }
 
+    private void pickBannerImage() {
+        try {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
+            startActivityForResult(intent, 104);
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
+
+    private void removeBanner() {
+        ProfileBannerHelper.deleteBanner(userId, new ProfileBannerHelper.BannerCallback() {
+            @Override
+            public void onSuccess(String url) {
+                AndroidUtilities.runOnUIThread(() -> {
+                    bannerUrl = null;
+                    if (bannerImageView != null) {
+                        bannerImageView.setVisibility(View.GONE);
+                        bannerImageView.setImageDrawable(null);
+                    }
+                    if (otherItem != null) {
+                        otherItem.hideSubItem(remove_banner);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String error) {
+                FileLog.e("Banner delete error: " + error);
+            }
+        });
+    }
+
+    private void loadBanner(long uid) {
+        if (uid != getUserConfig().getClientUserId()) return;
+        ProfileBannerHelper.downloadBanner(uid, new ProfileBannerHelper.BannerBitmapCallback() {
+            @Override
+            public void onSuccess(Bitmap bitmap) {
+                AndroidUtilities.runOnUIThread(() -> {
+                    bannerUrl = "http://31.77.147.69:5080/api/banner/" + uid;
+                    if (bannerImageView != null) {
+                        bannerImageView.setVisibility(View.VISIBLE);
+                        bannerImageView.setImageBitmap(bitmap);
+                    }
+                    if (otherItem != null) {
+                        otherItem.showSubItem(remove_banner);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String error) {
+                AndroidUtilities.runOnUIThread(() -> {
+                    if (bannerImageView != null) {
+                        bannerImageView.setVisibility(View.GONE);
+                    }
+                    if (otherItem != null) {
+                        otherItem.hideSubItem(remove_banner);
+                    }
+                });
+            }
+        });
+    }
+
     @Override
     public void onActivityResultFragment(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 104 && resultCode == Activity.RESULT_OK && data != null) {
+            onBannerPicked(data.getData());
+            return;
+        }
         if (imageUpdater != null) {
             imageUpdater.onActivityResult(requestCode, resultCode, data);
         }
@@ -12751,6 +12840,37 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     public void restoreSelfArgs(Bundle args) {
         if (imageUpdater != null) {
             imageUpdater.currentPicturePath = args.getString("path");
+        }
+    }
+
+    private void onBannerPicked(Uri uri) {
+        try {
+            InputStream is = getParentActivity().getContentResolver().openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(is);
+            if (is != null) is.close();
+            if (bitmap == null) return;
+            ProfileBannerHelper.uploadBanner(userId, bitmap, new ProfileBannerHelper.BannerCallback() {
+                @Override
+                public void onSuccess(String url) {
+                    AndroidUtilities.runOnUIThread(() -> {
+                        bannerUrl = url;
+                        if (bannerImageView != null) {
+                            bannerImageView.setVisibility(View.VISIBLE);
+                            bannerImageView.setImageBitmap(bitmap);
+                        }
+                        if (otherItem != null) {
+                            otherItem.showSubItem(remove_banner);
+                        }
+                    });
+                }
+
+                @Override
+                public void onError(String error) {
+                    FileLog.e("Banner upload error: " + error);
+                }
+            });
+        } catch (Exception e) {
+            FileLog.e(e);
         }
     }
 

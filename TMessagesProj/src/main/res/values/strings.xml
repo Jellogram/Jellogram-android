@@ -10711,4 +10711,7 @@ list of reactions.</string>
     <!-- Jellogram Header -->
     <string name="JellogramCategoryUpdates">Updates</string>
     <string name="JellogramUpdatesEnabled">Auto check updates</string>
+    <!-- Profile Banner -->
+    <string name="SetBanner">Set banner</string>
+    <string name="RemoveBanner">Remove banner</string>
 </resources>
