@@ -79,11 +79,10 @@ public class PluginsActivity extends BaseFragment {
     private void confirmUninstall(LuaPlugin plugin) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
         builder.setTitle(LocaleController.getString(R.string.JellogramPlugins));
-        builder.setMessage(LocaleController.formatString("Uninstall plugin %s?", plugin.getName()));
+        builder.setMessage(String.format("Uninstall plugin %s?", plugin.getName()));
         builder.setPositiveButton(LocaleController.getString(R.string.Delete), (dialog, which) -> {
             try {
-                org.telegram.messenger.PluginManager.getInstance().removePlugin(plugin.getId());
-                pluginManager.shutdown();
+                pluginManager.unloadPlugin(plugin.getName());
                 pluginManager.loadAllPlugins();
                 updatePluginsList();
             } catch (Exception e) {
